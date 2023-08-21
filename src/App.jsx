@@ -1,29 +1,414 @@
 import { useState, useEffect, useLayoutEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import LayersModal from './components/LayersModal'
 import './App.css'
+import axios from 'axios'
+//https://github.com/naturalatlas/geomagnetism
+import geomagnetism from 'geomagnetism'
 
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
-
+var Map = null;
+var BaseLayer = 'streets';
+var IsMensure = false;
+var MensureMagVarDirection = 0;
+var MensureStartCoordinate = null;
 
 function App() {
+
+  BaseLayer = localStorage.getItem("baselayer");
 
 
   useLayoutEffect(() => {
     var bl = 'mapbox://styles/mapbox/streets-v12';
+    if (BaseLayer == 'sat') bl = 'mapbox://styles/mapbox/satellite-v9';
+    if (BaseLayer == 'topo') bl = 'mapbox://styles/mapbox/outdoors-v12';
+    if (BaseLayer == 'dark') bl = 'mapbox://styles/mapbox/dark-v11';
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoicm9kcmlnb3NpbSIsImEiOiJjbGF2ZngwNzgwNWNhM29qdW9idjl4cWdhIn0.0w3YOTHP8hqYC15F6_D80A';
     Map = new mapboxgl.Map({
       container: 'map',
       style: bl,
-      center: [0, 0],
+      center: [-50, -15],
       zoom: 3,
     });
 
-    
 
-  }, []);
+    Map.on('style.load', () => {
+      LoadSourceAndLayers()
+    });
+
+    Map.on('mousemove', (e) => {
+      if (IsMensure && MensureStartCoordinate != null) {
+        var currentCoordinate = e.lngLat
+
+        Map.getSource('mensure-route-source').setData({
+          'type': 'FeatureCollection',
+          'features': [{
+            'geometry': {
+              'type': 'LineString',
+              'coordinates': [[MensureStartCoordinate.lng, MensureStartCoordinate.lat], [e.lngLat.lng, e.lngLat.lat]]
+            }
+          }]
+        })
+
+        let distance = calculateDistance(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e.lngLat.lat, e.lngLat.lng).toFixed(1)
+        let direction = parseInt(calculateDirection(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e.lngLat.lat, e.lngLat.lng, MensureMagVarDirection))
+
+        Map.getSource('mensure-end-source').setData({
+          'type': 'FeatureCollection',
+          'features': [{
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [e.lngLat.lng, e.lngLat.lat]
+            },
+            'properties': {
+              'ident': distance + "NM/" + direction + 'DEG'
+            }
+          }]
+        })
+      }
+    });
+
+    Map.on('style.load', function () {
+      Map.on('click', function (e) {
+        if (IsMensure) {
+          if (MensureStartCoordinate === null) {
+            console.log("cord", e.lngLat)
+            //axios.get(`http://127.0.0.1:8000/api/v3/direction/${e.lngLat.lat}/${e.lngLat.lng}`).then(response => {
+
+            MensureStartCoordinate = e.lngLat;
+
+            
+            const info = geomagnetism.model().point([e.lngLat.lng, e.lngLat.lat]);
+            MensureMagVarDirection = info.decl;
+
+              //add start point
+              Map.getSource('mensure-start-source').setData({
+                'type': 'FeatureCollection',
+                'features': [{
+                  'geometry': {
+                    'type': 'Point',
+                    'coordinates': [e.lngLat.lng, e.lngLat.lat]
+                  },
+                  'properties': {
+                    'ident': 'teste'
+                  }
+                }]
+              })
+
+            //})
+          } else {
+            console.log("cord2", e.lngLat)
+
+            MensureMagVarDirection = 0;
+            MensureStartCoordinate = null;
+          }
+        }
+      });
+    });
+
+    Map.on('mousemove', (e) => {
+      if (IsMensure && MensureStartCoordinate != null) {
+        var currentCoordinate = e.lngLat
+
+        Map.getSource('mensure-route-source').setData({
+          'type': 'FeatureCollection',
+          'features': [{
+            'geometry': {
+              'type': 'LineString',
+              'coordinates': [[MensureStartCoordinate.lng, MensureStartCoordinate.lat], [e.lngLat.lng, e.lngLat.lat]]
+            }
+          }]
+        })
+
+        let distance = calculateDistance(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e.lngLat.lat, e.lngLat.lng).toFixed(1)
+        let direction = parseInt(calculateDirection(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e.lngLat.lat, e.lngLat.lng, MensureMagVarDirection))
+
+        Map.getSource('mensure-end-source').setData({
+          'type': 'FeatureCollection',
+          'features': [{
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [e.lngLat.lng, e.lngLat.lat]
+            },
+            'properties': {
+              'ident': distance + "NM/" + direction + 'DEG'
+            }
+          }]
+        })
+      }
+    });
+
+  });
+
+  const LoadSourceAndLayers = () => {
+    Map.addSource('mensure-start-source', {
+      'type': 'geojson',
+      'data': null
+    });
+
+    Map.addSource('mensure-route-source', {
+      'type': 'geojson',
+      'data': null
+    });
+
+    Map.addSource('mensure-end-source', {
+      'type': 'geojson',
+      'data': null
+    });
+
+    Map.addLayer({
+      'id': 'mensure-start',
+      'type': 'symbol',
+      'source': 'mensure-start-source',
+      'layout': {
+        'icon-image': 'dot-image-green',
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+      },
+      paint: {
+        "text-color": '#fff',
+        "text-halo-width": 1,
+        "text-halo-color": "#b91c1c",
+        "text-halo-width": 100
+      }
+    });
+
+    Map.addLayer({
+      'id': 'mensure-route',
+      'type': 'line',
+      'source': 'mensure-route-source',
+      'layout': {
+        'line-cap': 'round',
+      },
+      'paint': {
+        'line-color': '#b91c1c',
+        'line-opacity': 0.75,
+        'line-width': 3,
+      }
+    });
+
+    Map.addLayer({
+      'id': 'mensure-end',
+      'type': 'symbol',
+      'source': 'mensure-end-source',
+      'layout': {
+        'icon-image': 'dot-image-green',
+        'text-field': ['get', 'ident'],
+        'text-variable-anchor': ['bottom'],
+        'text-radial-offset': 0.75,
+        'text-justify': 'auto',
+        'icon-size': 1,
+
+        "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+        "text-size": 16,
+        "text-letter-spacing": 0.05,
+        "text-offset": [0, 10],
+        "text-transform": "uppercase",
+
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+      },
+      paint: {
+        "text-color": '#fff',
+        "text-halo-width": 1,
+        "text-halo-color": "#b91c1c",
+        "text-halo-width": 100
+      }
+    });
+
+    const size = 100;
+    const dot_purple = {
+      width: size,
+      height: size,
+      data: new Uint8Array(size * size * 4),
+
+      onAdd: function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        this.context = canvas.getContext('2d');
+      },
+
+      render: function () {
+        const duration = 1000;
+        const t = (performance.now() % duration) / duration;
+
+        const radius = (size / 2) * 0.3;
+        const outerRadius = (size / 2) * 0.7 * t + radius;
+        const context = this.context;
+
+        context.beginPath();
+        context.arc(
+          this.width / 2,
+          this.height / 2,
+          radius,
+          0,
+          Math.PI * 2
+        );
+        context.fillStyle = '#581c87';
+        context.strokeStyle = 'white';
+        context.lineWidth = 4;
+        context.fill();
+        context.stroke();
+
+        this.data = context.getImageData(
+          0,
+          0,
+          this.width,
+          this.height
+        ).data;
+        return true;
+      }
+    };
+
+    const dot_green = {
+      width: size,
+      height: size,
+      data: new Uint8Array(size * size * 4),
+
+      onAdd: function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        this.context = canvas.getContext('2d');
+      },
+
+      render: function () {
+        const duration = 1000;
+        const t = (performance.now() % duration) / duration;
+
+        const radius = (size / 2) * 0.3;
+        const outerRadius = (size / 2) * 0.7 * t + radius;
+        const context = this.context;
+
+        context.beginPath();
+        context.arc(
+          this.width / 2,
+          this.height / 2,
+          radius,
+          0,
+          Math.PI * 2
+        );
+        context.fillStyle = '#b91c1c';
+        context.strokeStyle = 'white';
+        context.lineWidth = 4;
+        context.fill();
+        context.stroke();
+
+        this.data = context.getImageData(
+          0,
+          0,
+          this.width,
+          this.height
+        ).data;
+        return true;
+      }
+    };
+
+    Map.addImage('dot-image-purple', dot_purple, { pixelRatio: 2 });
+
+    Map.addImage('dot-image-green', dot_green, { pixelRatio: 2 });
+  }
+
+
+  const SetBaseLayer = (value) => {
+
+    switch (value) {
+      case 'sat':
+        Map.setStyle('mapbox://styles/mapbox/satellite-v9');
+        break;
+      case 'topo':
+        Map.setStyle('mapbox://styles/mapbox/outdoors-v12');
+        break;
+      case 'dark':
+        Map.setStyle('mapbox://styles/mapbox/dark-v11');
+        break;
+      default:
+        Map.setStyle('mapbox://styles/mapbox/streets-v12');
+        BaseLayer = 'streets';
+        break;
+    }
+
+    BaseLayer = value;
+
+    localStorage.setItem("baselayer", BaseLayer)
+
+    Map.on('style.load', () => {
+      LoadSourceAndLayers()
+    })
+  }
+
+  const SetMensure = (value) => {
+    IsMensure = value
+
+    const popups = document.getElementsByClassName("mapboxgl-popup");
+    if (IsMensure && (popups.length)) {
+      Popup.remove();
+    }
+
+    if (!IsMensure) {
+      Map.getSource('mensure-route-source').setData({
+        'type': 'FeatureCollection',
+        'features': []
+      })
+      Map.getSource('mensure-end-source').setData({
+        'type': 'FeatureCollection',
+        'features': []
+      })
+      Map.getSource('mensure-start-source').setData({
+        'type': 'FeatureCollection',
+        'features': []
+      })
+    }
+  }
+
+  //functions
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    var R = 6371000;
+    var dLat = toRadians(lat2 - lat1);
+    var dLon = toRadians(lon2 - lon1);
+    var lat1 = toRadians(lat1);
+    var lat2 = toRadians(lat2);
+
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d * 0.000539957;
+  };
+
+  function calculateDirection(lat1, lon1, lat2, lon2, mag) {
+    var direction = 0;
+
+    lat1 = toRadians(lat1);
+    lon1 = toRadians(lon1);
+    lat2 = toRadians(lat2);
+    lon2 = toRadians(lon2);
+
+    var y = Math.sin(lon2 - lon1) * Math.cos(lat2);
+    var x = Math.cos(lat1) * Math.sin(lat2) -
+      Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
+    var brng = Math.atan2(y, x);
+    brng = toDegrees(brng);
+    direction = (brng + 360) % 360;
+
+    direction = direction - mag;
+
+    if (direction > 360) {
+      direction = direction - 360;
+    }
+
+    return direction;
+  };
+
+  function toRadians(degrees) {
+    return degrees * Math.PI / 180;
+  };
+
+  function toDegrees(radians) {
+    return radians * 180 / Math.PI;
+  };
 
 
 
@@ -83,12 +468,20 @@ function App() {
         </div>
       </header>
 
-      <div id="map" className="flex flex-none items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 z-50 mt-16">
+      <div id="map" className="items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 mt-16">
       </div>
 
-      <h1 className="text-3xl font-bold underline bg-neutral-700">
+      <LayersModal
+        className="flex flex-none items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 mt-16 z-50"
+        SetBaseLayer={SetBaseLayer}
+        SetMensure={SetMensure}
+        href="#">
+      </LayersModal>
+
+      <h1 className="">
         AuroraEditor 1
       </h1>
+
     </>
   )
 }
