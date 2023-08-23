@@ -54,28 +54,28 @@ export default function LayersModal({SetBaseLayer, SetMensure }) {
                                     <ul className="flex space-x-2">
                                         <li>
                                             {(baseLayerValue != 'sat' && baseLayerValue != 'topo' && baseLayerValue != 'dark') ? (
-                                                <span id="streets" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-purple-600 cursor-pointer hover:text-zinc-300 select-none" alt="Estradas" title="Estradas">STREETS</span>
+                                                <span id="streets" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-zinc-300 select-none" alt="Estradas" title="Estradas">STREETS</span>
                                             ) : (
                                                 <span id="streets" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-400 bg-zinc-900 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none">STREETS</span>
                                             )}
                                         </li>
                                         <li>
                                             {(baseLayerValue == 'sat') ? (
-                                                <span id="sat" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-purple-600 cursor-pointer hover:text-zinc-300 select-none">SAT</span>
+                                                <span id="sat" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-zinc-300 select-none">SAT</span>
                                             ) : (
                                                 <span id="sat" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-400 bg-zinc-900 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none">SAT</span>
                                             )}
                                         </li>
                                         <li>
                                             {(baseLayerValue == 'topo') ? (
-                                                <span id="topo" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-purple-600 cursor-pointer hover:text-zinc-300 select-none">TOPO</span>
+                                                <span id="topo" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-zinc-300 select-none">TOPO</span>
                                             ) : (
                                                 <span id="topo" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-400 bg-zinc-900 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none">TOPO</span>
                                             )}
                                         </li>
                                         <li>
                                             {(baseLayerValue == 'dark') ? (
-                                                <span id="dark" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-purple-600 cursor-pointer hover:text-zinc-300 select-none">DARK</span>
+                                                <span id="dark" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-zinc-300 select-none">DARK</span>
                                             ) : (
                                                 <span id="dark" onClick={handleBaseLayerClick} className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-400 bg-zinc-900 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none">DARK</span>
                                             )}
@@ -105,7 +105,7 @@ export default function LayersModal({SetBaseLayer, SetMensure }) {
                                 <ul className="flex flex-col space-y-1">
                                     <li>
                                         {(mensure) ? (
-                                            <span onClick={handleMensure} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none text-green-600" alt="Camada base do mapa" title="Camada base do mapa">MENSURE</span>
+                                            <span onClick={handleMensure} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none text-emerald-600" alt="Camada base do mapa" title="Camada base do mapa">MENSURE</span>
                                         ) : (
                                             <span onClick={handleMensure} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none" alt="Camada base do mapa" title="Camada base do mapa">MENSURE</span>                                            
                                         )}

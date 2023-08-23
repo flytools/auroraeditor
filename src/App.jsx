@@ -8,6 +8,10 @@ import axios from 'axios'
 //https://github.com/naturalatlas/geomagnetism
 import geomagnetism from 'geomagnetism'
 
+import ImportData from './helpers/ImportData'
+import {DMStoDec} from './helpers/Convert'
+
+
 var Map = null;
 var BaseLayer = 'streets';
 var IsMensure = false;
@@ -32,7 +36,7 @@ function App() {
     });
 
 
-    Map.on('style.load', () => {
+    Map.on('style.load', function () {
       LoadSourceAndLayers()
     });
 
@@ -141,6 +145,24 @@ function App() {
   });
 
   const LoadSourceAndLayers = () => {
+
+    Map.addSource('vfr_route', { type: 'geojson', data: null });
+
+    Map.addLayer({
+      'id': 'vfr_route',
+      'type': 'line',
+      'source': 'vfr_route',
+      'layout': {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      'paint': {
+        'line-color': '#ff0000',
+        'line-width': 8
+      }
+    });
+
+
     Map.addSource('mensure-start-source', {
       'type': 'geojson',
       'data': null
@@ -333,7 +355,7 @@ function App() {
 
     localStorage.setItem("baselayer", BaseLayer)
 
-    Map.on('style.load', () => {
+    Map.on('load', () => {
       LoadSourceAndLayers()
     })
   }
@@ -416,6 +438,102 @@ function App() {
     importRef.current.OpenCloseImport()
   }
 
+  const handleImportData = (data, type) => {
+    //alert(data, type);
+    var features = ImportData(data, type);
+    console.log(features)
+    
+    var dataJson = null
+
+
+    var clearLayer = true
+
+    if (clearLayer) {
+      dataJson = {
+        'type': 'FeatureCollection',
+        'features': []
+      }
+
+      features.forEach(feature => {
+        var element = {
+          'type': 'Feature',
+          'properties': {label:feature.label},
+          'geometry': {
+            'type': 'LineString',
+            'coordinates': feature.coordinates
+          }
+        }
+        
+        dataJson.features.push(element)
+      });
+
+
+    } else {
+      dataJson = Map.getSource('vfr_route').getData(dd);
+      dataJson.features.push(
+        {
+          'type': 'Feature',
+          'properties': {},
+          'geometry': {
+            'type': 'LineString',
+            'coordinates': [
+              [-40, -10.832429],
+              [-42.491636, -10.832564],
+              [-42.492237, -10.833378],
+              [-52.493782, -10.833683]
+            ]
+          }
+        },
+      )
+    }
+    
+    Map.getSource('vfr_route').setData(dataJson);
+    //alert(DMStoDec("N038.10.04.627;E024.33.34.904;"))
+    /*// Add a data source containing GeoJSON data.
+    Map.addSource('maine', {
+      'type': 'geojson',
+      'data': {
+        'type': 'Feature',
+        'geometry': {
+          'type': 'Polygon',
+          // These coordinates outline Maine.
+          'coordinates': [
+            [
+              [-40, -5],
+              [-45, -4],
+              [-44, -5],
+              [-42, -8],
+              [-40, -5]
+            ]
+          ]
+        }
+      }
+    });
+
+    // Add a new layer to visualize the polygon.
+    Map.addLayer({
+      'id': 'maine',
+      'type': 'fill',
+      'source': 'maine', // reference the data source
+      'layout': {},
+      'paint': {
+        'fill-color': '#0080ff', // blue color fill
+        'fill-opacity': 0.5
+      }
+    });
+    // Add a black outline around the polygon.
+    Map.addLayer({
+      'id': 'outline',
+      'type': 'line',
+      'source': 'maine',
+      'layout': {},
+      'paint': {
+        'line-color': '#000',
+        'line-width': 3
+      }
+    });*/
+  }
+
 
   
 
@@ -487,6 +605,7 @@ function App() {
         innerRef={importRef}
         className="flex flex-none items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 mt-16 z-50"
         Map={Map}
+        handleImportData={handleImportData}
         href="#">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
