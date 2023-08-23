@@ -438,38 +438,31 @@ function App() {
     importRef.current.OpenCloseImport()
   }
 
-  const handleImportData = (data, type) => {
+  const handleImportData = (data, type, clear) => {
     //alert(data, type);
-    var features = ImportData(data, type);
-    console.log(features)
-    
+    var features = ImportData(data, type);  
     var dataJson = null
-
-
-    var clearLayer = true
-
-    if (clearLayer) {
+    if (clear) {
       dataJson = {
         'type': 'FeatureCollection',
         'features': []
       }
 
       features.forEach(feature => {
-        var element = {
+        dataJson.features.push({
           'type': 'Feature',
-          'properties': {label:feature.label},
+          'properties': { label: feature.label },
           'geometry': {
             'type': 'LineString',
             'coordinates': feature.coordinates
           }
-        }
-        
-        dataJson.features.push(element)
+        })
       });
 
 
     } else {
-      dataJson = Map.getSource('vfr_route').getData(dd);
+      //console.log(Map.querySourceFeatures('vfr_route'))
+      /*dataJson = Map.getSource('vfr_route').getData(dataJson);
       dataJson.features.push(
         {
           'type': 'Feature',
@@ -484,54 +477,31 @@ function App() {
             ]
           }
         },
-      )
+      )*/
     }
-    
     Map.getSource('vfr_route').setData(dataJson);
-    //alert(DMStoDec("N038.10.04.627;E024.33.34.904;"))
-    /*// Add a data source containing GeoJSON data.
-    Map.addSource('maine', {
-      'type': 'geojson',
-      'data': {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Polygon',
-          // These coordinates outline Maine.
-          'coordinates': [
-            [
-              [-40, -5],
-              [-45, -4],
-              [-44, -5],
-              [-42, -8],
-              [-40, -5]
-            ]
-          ]
-        }
-      }
-    });
+    SetExpandTo('vfr_route')
+  }
 
-    // Add a new layer to visualize the polygon.
-    Map.addLayer({
-      'id': 'maine',
-      'type': 'fill',
-      'source': 'maine', // reference the data source
-      'layout': {},
-      'paint': {
-        'fill-color': '#0080ff', // blue color fill
-        'fill-opacity': 0.5
-      }
+
+  const SetExpandTo = (source) => {
+    let coordinates = []
+    Map.getSource(source)._data.features.map(feature => {
+      coordinates.push(feature.geometry.coordinates[0])
+    })
+
+    const bounds = new mapboxgl.LngLatBounds(
+      coordinates[0],
+      coordinates[0]
+    );
+
+    for (const coord of coordinates) {
+      bounds.extend(coord);
+    }
+
+    Map.fitBounds(bounds, {
+      padding: 120
     });
-    // Add a black outline around the polygon.
-    Map.addLayer({
-      'id': 'outline',
-      'type': 'line',
-      'source': 'maine',
-      'layout': {},
-      'paint': {
-        'line-color': '#000',
-        'line-width': 3
-      }
-    });*/
   }
 
 
@@ -549,7 +519,7 @@ function App() {
 
           <div className="flex items-center space-x-2">
             <nav className="hidden lg:flex lg:items-center lg:space-x-2 text-sm">
-              <a href="" className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800">
+              <a href="" className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                   <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875z" />
                   <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 001.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 001.897 1.384C6.809 12.164 9.315 12.75 12 12.75z" />
@@ -559,21 +529,21 @@ function App() {
                 <span>Clear</span>
               </a>
 
-              <a onClick={handleOpenCloseImport} className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800">
+              <a onClick={handleOpenCloseImport} className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                   <path d="M9.97.97a.75.75 0 011.06 0l3 3a.75.75 0 01-1.06 1.06l-1.72-1.72v3.44h-1.5V3.31L8.03 5.03a.75.75 0 01-1.06-1.06l3-3zM9.75 6.75v6a.75.75 0 001.5 0v-6h3a3 3 0 013 3v7.5a3 3 0 01-3 3h-7.5a3 3 0 01-3-3v-7.5a3 3 0 013-3h3z" />
                   <path d="M7.151 21.75a2.999 2.999 0 002.599 1.5h7.5a3 3 0 003-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 01-4.5 4.5H7.151z" />
                 </svg>
                 <span>Import</span>
               </a>
-              <a href="" className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800">
+              <a href="" className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                   <path fillRule="evenodd" d="M9.75 6.75h-3a3 3 0 00-3 3v7.5a3 3 0 003 3h7.5a3 3 0 003-3v-7.5a3 3 0 00-3-3h-3V1.5a.75.75 0 00-1.5 0v5.25zm0 0h1.5v5.69l1.72-1.72a.75.75 0 111.06 1.06l-3 3a.75.75 0 01-1.06 0l-3-3a.75.75 0 111.06-1.06l1.72 1.72V6.75z" clipRule="evenodd" />
                   <path d="M7.151 21.75a2.999 2.999 0 002.599 1.5h7.5a3 3 0 003-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 01-4.5 4.5H7.151z" />
                 </svg>
                 <span>Export</span>
               </a>
-              <a href="" className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 bg-neutral-800">
+              <a href="" className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer bg-neutral-800">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                   <path d="M5.625 3.75a2.625 2.625 0 100 5.25h12.75a2.625 2.625 0 000-5.25H5.625zM3.75 11.25a.75.75 0 000 1.5h16.5a.75.75 0 000-1.5H3.75zM3 15.75a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75zM3.75 18.75a.75.75 0 000 1.5h16.5a.75.75 0 000-1.5H3.75z" />
                 </svg>

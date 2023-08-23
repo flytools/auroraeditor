@@ -11,6 +11,7 @@ export default function ImportModal({ innerRef, children, Map, defaultShowModal,
 
     const [content, setcontent] = useState("");
     const [typeOfFile, setTypeOfFile] = useState("");
+    const [clear, setClear] = useState(true);
 
 
     useEffect(() => {
@@ -40,7 +41,7 @@ export default function ImportModal({ innerRef, children, Map, defaultShowModal,
     const handleSave = () => {
         //console.log("saveee", typeOfFile)
         
-        handleImportData(content, typeOfFile)
+        handleImportData(content, typeOfFile, clear)
         
     }
 
@@ -110,20 +111,40 @@ export default function ImportModal({ innerRef, children, Map, defaultShowModal,
                                     
                                     <div className="p-2">
                                         <select 
-                                        onChange={e => handleTypeOfFileChange(e)}
-                                        id="typeOfFile" 
-                                        className="block p-2.5 w-full text-sm text-neutral-900 bg-neutral-50 rounded-lg border border-neutral-300 focus:ring-emerald-800 focus:border-emerald-800 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800"
-                                        value={typeOfFile}
+                                            onChange={e => handleTypeOfFileChange(e)}
+                                            id="typeOfFile" 
+                                            className="block p-2.5 w-full text-sm text-neutral-900 bg-neutral-50 rounded-lg border border-neutral-300 focus:ring-emerald-800 focus:border-emerald-800 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800"
+                                            value={typeOfFile}
                                         >
                                             <option value="">Choose a file type</option>
                                             <option value="vrt">VFR TRACK (.vrt)</option>
                                             <option value="vfi">VFR INFO POINT (.vfi)</option>
                                         </select>
-                                    </div>
+                                </div>
+                                
+                                <div className="p-2">
+                                    <label class="inline-flex relative items-center mr-5 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            checked={clear}
+                                            readOnly
+                                        />
+                                        <div
+                                            onClick={() => {
+                                                setClear(!clear);
+                                            }}
+                                            className="w-11 h-6 bg-neutral-700 rounded-full peer  peer-focus:ring-emerald-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"
+                                        ></div>
+                                        <span className="ml-2">
+                                            Clear layer
+                                        </span>
+                                    </label>                                    
+                                </div>
 
                                     <div className="p-2">
-                                        actions
-                                    </div>
+
+                                </div>
 
                                     <div className="p-2 pb-6 relative h-auto w-full">
                                         <button id="save" onClick={()=>handleSave()} className="absolute right-2 p-0 px-2 w-auto text-md font-semibold text-neutral-400 bg-neutral-900 rounded-md border-2 border-emerald-800 cursor-pointer hover:text-neutral-300 hover:border-emerald-800">IMPORTAR</button>
