@@ -18,9 +18,14 @@ var IsMensure = false;
 var MensureMagVarDirection = 0;
 var MensureStartCoordinate = null;
 
+import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
+
+
 function App() {
 
-  BaseLayer = localStorage.getItem("baselayer");
+  const position = [51.505, -0.09]
+
+  /*BaseLayer = localStorage.getItem("baselayer");
   useLayoutEffect(() => {
     var bl = 'mapbox://styles/mapbox/streets-v12';
     if (BaseLayer == 'sat') bl = 'mapbox://styles/mapbox/satellite-v9';
@@ -334,7 +339,7 @@ function App() {
     Map.addImage('dot-image-purple', dot_purple, { pixelRatio: 2 });
 
     Map.addImage('dot-image-green', dot_green, { pixelRatio: 2 });
-  }
+  }*/
 
 
   const SetBaseLayer = (value) => {
@@ -567,6 +572,18 @@ function App() {
 
       <div id="map" className="items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 mt-16">
       </div>
+
+      <MapContainer className='h-full fixed top-0 right-0 left-0 mt-16' center={position} zoom={13} scrollWheelZoom={true}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Marker position={position}>
+          <Popup>
+            A pretty CSS3 popup. <br /> Easily customizable.
+          </Popup>
+        </Marker>
+      </MapContainer>
 
       <LayersModal
         className="flex flex-none items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 mt-16 z-50"
