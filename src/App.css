@@ -40,3 +40,23 @@
 .read-the-docs {
   color: #888;
 }
+
+.label-mensure{
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: -1em;
+  background: #b91c1c;
+  padding: 0px 2px;
+  border: none;
+  color: white;
+  font-size: 14px;
+}
+
+.label-mensure::after, .label-mensure::before{
+  display: none;
+}
+
+.leaflet-control-zoom{
+  display: none;
+}

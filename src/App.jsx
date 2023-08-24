@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import LayersModal from './components/LayersModal'
@@ -18,12 +18,212 @@ var IsMensure = false;
 var MensureMagVarDirection = 0;
 var MensureStartCoordinate = null;
 
-import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
+var MensureStartMarker = L.layerGroup([]);;
+var MensureEndMarker = L.layerGroup([]);;
+var MensureRoute = L.layerGroup([]);;
 
+var AuroraVfrRoute = L.featureGroup([]);;
+
+import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet'
+import { useMap, Rectangle } from "react-leaflet";
+
+
+
+const innerBounds = [
+  [49.505, -2.09],
+  [53.505, 2.09],
+]
+const outerBounds = [
+  [50.505, -29.09],
+  [52.505, 29.09],
+]
+
+const redColor = { color: 'red' }
+const whiteColor = { color: 'white' }
+
+function SetBoundsRectangles(refz) {
+  return null
+  const [bounds, setBounds] = useState(outerBounds)
+  const map = useMap()
+
+  const innerHandlers = useMemo(
+    () => ({
+      click() {
+        setBounds(innerBounds)
+        map.fitBounds(innerBounds)
+      },
+    }),
+    [map],
+  )
+  const outerHandlers = useMemo(
+    () => ({
+      click() {
+        setBounds(outerBounds)
+        map.fitBounds(outerBounds)
+      },
+    }),
+    [map],
+  )
+
+  return (
+    <>
+      <Rectangle
+        bounds={outerBounds}
+        eventHandlers={outerHandlers}
+        pathOptions={bounds === outerBounds ? redColor : whiteColor}
+      />
+      <Rectangle
+        bounds={innerBounds}
+        eventHandlers={innerHandlers}
+        pathOptions={bounds === innerBounds ? redColor : whiteColor}
+      />
+    </>
+  )
+}
 
 function App() {
+  //map
+  const mapRef = useRef(null)
+  
+  //baselayer
+  const tileLayerRef = useRef(null)
+  const basemap = (localStorage.getItem("baselayerurl") == null) ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" : localStorage.getItem("baselayerurl")
+  
+  useEffect(() => {
+    if (tileLayerRef.current) {
+      SetBaseLayer(localStorage.getItem("baselayer"))
+    }
+  }, [])
 
-  const position = [51.505, -0.09]
+  const SetBaseLayer = (value) => {
+    var url = ""
+
+    switch (value) {
+      case 'sat':
+        url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        break;
+      case 'topo':
+        url = "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png"
+        break;
+      case 'dark':
+        url = "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
+        break;
+      default:
+        url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        break;
+    }
+
+    localStorage.setItem("baselayer", value)
+    localStorage.setItem("baselayerurl", url)
+
+    tileLayerRef.current.setUrl(url)
+  }
+
+  //mensure
+  const SetMensure = (value) => {
+    IsMensure = value
+
+    if (!value) {
+      MensureStartCoordinate = null
+      MensureStartMarker.clearLayers()
+      MensureEndMarker.clearLayers()
+      MensureRoute.clearLayers()
+    }
+  }
+
+
+  const animateRef = useRef(false)
+
+  function SetViewOnClick({ animateRef }) {
+    const map = useMapEvent('click', (e) => {
+
+      if (IsMensure) {
+        if (MensureStartCoordinate == null) {
+          MensureStartMarker.clearLayers()
+          MensureEndMarker.clearLayers()
+
+          MensureStartCoordinate = e.latlng
+
+          var marker = L.circleMarker(e.latlng, {
+            radius: 7,
+            color: 'white',
+            fill: true,
+            fillOpacity: 1,
+            fillColor: '#b91c1c'
+          })
+          marker.addTo(MensureStartMarker)
+        } else {
+          MensureStartCoordinate = null
+          //map.removeLayer(MensureStartMarker)
+        }
+      }
+    })
+
+    const map2 = useMapEvent('mousemove', (e2) => {
+      if (MensureStartCoordinate != null) {
+        MensureEndMarker.clearLayers()
+        MensureRoute.clearLayers()
+        var marker = new L.circleMarker(e2.latlng, {
+          radius: 7,
+          color: 'white',
+          fill: true,
+          fillOpacity: 1,
+          fillColor: '#b91c1c'
+        })
+
+        const info = geomagnetism.model().point([e2.latlng.lng, e2.latlng.lat]);
+        MensureMagVarDirection = info.decl;
+
+        let distance = calculateDistance(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e2.latlng.lat, e2.latlng.lng).toFixed(1)
+        let direction = parseInt(calculateDirection(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e2.latlng.lat, e2.latlng.lng, MensureMagVarDirection))
+
+        marker.bindTooltip(distance + "NM   " + direction + 'DEG', {
+          permanent: true,
+          offset: [10, 10],
+          className: "label-mensure"
+        });
+        marker.addTo(MensureEndMarker)
+
+        // draw the line between points
+        L.polyline([MensureStartCoordinate, e2.latlng], {
+          color: '#b91c1c',
+          strokeWidth: '10px',
+          weight: 7
+        }).addTo(MensureRoute);
+      }
+    })
+
+    return null
+  }
+
+
+  function SetViewOnClick2({ animateRef }) {
+    
+
+    return null
+  }
+
+
+
+
+
+  
+
+
+  useEffect(() => {
+
+  });
+
+
+  function handleOnSetView() {
+
+    /*const { current = {} } = mapRef;
+    const { leafletElement: map } = current;
+
+    map.setView([-40,-5], 14);*/
+  }
+
+
 
   /*BaseLayer = localStorage.getItem("baselayer");
   useLayoutEffect(() => {
@@ -342,56 +542,9 @@ function App() {
   }*/
 
 
-  const SetBaseLayer = (value) => {
+  
 
-    switch (value) {
-      case 'sat':
-        Map.setStyle('mapbox://styles/mapbox/satellite-v9');
-        break;
-      case 'topo':
-        Map.setStyle('mapbox://styles/mapbox/outdoors-v12');
-        break;
-      case 'dark':
-        Map.setStyle('mapbox://styles/mapbox/dark-v11');
-        break;
-      default:
-        Map.setStyle('mapbox://styles/mapbox/streets-v12');
-        BaseLayer = 'streets';
-        break;
-    }
-
-    BaseLayer = value;
-
-    localStorage.setItem("baselayer", BaseLayer)
-
-    Map.on('load', () => {
-      LoadSourceAndLayers()
-    })
-  }
-
-  const SetMensure = (value) => {
-    IsMensure = value
-
-    const popups = document.getElementsByClassName("mapboxgl-popup");
-    if (IsMensure && (popups.length)) {
-      Popup.remove();
-    }
-
-    if (!IsMensure) {
-      Map.getSource('mensure-route-source').setData({
-        'type': 'FeatureCollection',
-        'features': []
-      })
-      Map.getSource('mensure-end-source').setData({
-        'type': 'FeatureCollection',
-        'features': []
-      })
-      Map.getSource('mensure-start-source').setData({
-        'type': 'FeatureCollection',
-        'features': []
-      })
-    }
-  }
+  
 
   //functions
   function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -448,71 +601,27 @@ function App() {
   }
 
   const handleImportData = (data, type, clear) => {
-    //alert(data, type);
-    var features = ImportData(data, type);  
-    var dataJson = null
-    if (clear) {
-      dataJson = {
-        'type': 'FeatureCollection',
-        'features': []
-      }
+    if (type == 'vrt') {
+      if (clear) AuroraVfrRoute.clearLayers()
+
+      var features = ImportData(data, type);
 
       features.forEach(feature => {
-        dataJson.features.push({
-          'type': 'Feature',
-          'properties': { label: feature.label },
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': feature.coordinates
-          }
+        var points = []
+        feature.coordinates.forEach(coordinate => {
+          points.push(new L.LatLng(coordinate[1], coordinate[0]))
         })
-      });
-
-
-    } else {
-      //console.log(Map.querySourceFeatures('vfr_route'))
-      /*dataJson = Map.getSource('vfr_route').getData(dataJson);
-      dataJson.features.push(
-        {
-          'type': 'Feature',
-          'properties': {},
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': [
-              [-40, -10.832429],
-              [-42.491636, -10.832564],
-              [-42.492237, -10.833378],
-              [-52.493782, -10.833683]
-            ]
+        L.polyline(points, {
+          color: '#b91c1c',
+          strokeWidth: '10px',
+          weight: 7,
+          options: {
+            label: feature.label
           }
-        },
-      )*/
+        }).addTo(AuroraVfrRoute);
+      });
     }
-    Map.getSource('vfr_route').setData(dataJson);
-    SetExpandTo('vfr_route')
   }
-
-
-  const SetExpandTo = (source) => {
-    let coordinates = []
-    Map.getSource(source)._data.features.map(feature => {
-      coordinates.push(feature.geometry.coordinates[0])
-    })
-
-    const bounds = new mapboxgl.LngLatBounds(
-      coordinates[0],
-      coordinates[0]
-    );
-
-    for (const coord of coordinates) {
-      bounds.extend(coord);
-    }
-
-    Map.fitBounds(bounds, {
-      padding: 120
-    });
-  }
-
 
   
 
@@ -521,7 +630,7 @@ function App() {
       <header id="page-header" className="flex flex-none items-center h-16 bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 z-30">
         <div className="flex justify-between container xl:max-w-6xl mx-auto px-4 lg:px-8">
           <div className="flex items-center">
-            <a href="" className="group inline-flex items-center space-x-2 font-light text-2xl tracking-wide text-white hover:text-blue-500">
+            <a href="" className="group inline-flex items-center space-x-2 font-street text-2xl tracking-wide text-white hover:text-blue-500">
               <span className="hidden sm:inline">AuroraEditor 1.1</span>
             </a>
           </div>
@@ -545,7 +654,7 @@ function App() {
                 </svg>
                 <span>Import</span>
               </a>
-              <a href="" className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer">
+              <a onClick={handleOnSetView} className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                   <path fillRule="evenodd" d="M9.75 6.75h-3a3 3 0 00-3 3v7.5a3 3 0 003 3h7.5a3 3 0 003-3v-7.5a3 3 0 00-3-3h-3V1.5a.75.75 0 00-1.5 0v5.25zm0 0h1.5v5.69l1.72-1.72a.75.75 0 111.06 1.06l-3 3a.75.75 0 01-1.06 0l-3-3a.75.75 0 111.06-1.06l1.72 1.72V6.75z" clipRule="evenodd" />
                   <path d="M7.151 21.75a2.999 2.999 0 002.599 1.5h7.5a3 3 0 003-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 01-4.5 4.5H7.151z" />
@@ -573,16 +682,35 @@ function App() {
       <div id="map" className="items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 mt-16">
       </div>
 
-      <MapContainer className='h-full fixed top-0 right-0 left-0 mt-16' center={position} zoom={13} scrollWheelZoom={true}>
-        <TileLayer
+      <MapContainer
+        ref={mapRef}
+        className='h-full fixed top-0 right-0 left-0 mt-16'
+        center={[-10, -60]}
+        zoom={5}
+        scrollWheelZoom={true}
+        maxZoom={22}
+        minZoom={2}
+        //onClick={(alert("vida"))}
+        /*eventHandlers={{
+          click: (e) => {
+            console.log(IsMensure)
+          },
+        }}*/
+        layers={[MensureStartMarker, MensureEndMarker, MensureRoute, AuroraVfrRoute]}
+      >
+        <TileLayer ref={tileLayerRef}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url={basemap}
+          maxNativeZoom={18}
+          minZoom={0}
+          maxZoom={22}
         />
-        <Marker position={position}>
-          <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
-          </Popup>
-        </Marker>
+        <Marker
+          position={[52.5134, 13.4225]}
+        />
+        <SetViewOnClick animateRef={animateRef} />
+        <SetViewOnClick2 animateRef={animateRef} />
+        <SetBoundsRectangles />
       </MapContainer>
 
       <LayersModal

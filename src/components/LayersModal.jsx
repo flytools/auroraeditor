@@ -105,7 +105,7 @@ export default function LayersModal({SetBaseLayer, SetMensure }) {
                                 <ul className="flex flex-col space-y-1">
                                     <li>
                                         {(mensure) ? (
-                                            <span onClick={handleMensure} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none text-emerald-600" alt="Camada base do mapa" title="Camada base do mapa">MENSURE</span>
+                                            <span onClick={handleMensure} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-emerald-500 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-emerald-400 select-none text-emerald-700" alt="Camada base do mapa" title="Camada base do mapa">MENSURE</span>
                                         ) : (
                                             <span onClick={handleMensure} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none" alt="Camada base do mapa" title="Camada base do mapa">MENSURE</span>                                            
                                         )}

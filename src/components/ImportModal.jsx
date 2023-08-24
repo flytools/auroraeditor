@@ -123,7 +123,7 @@ export default function ImportModal({ innerRef, children, Map, defaultShowModal,
                                 </div>
                                 
                                 <div className="p-2">
-                                    <label class="inline-flex relative items-center mr-5 cursor-pointer">
+                                    <label className="inline-flex relative items-center mr-5 cursor-pointer">
                                         <input
                                             type="checkbox"
                                             className="sr-only peer"
