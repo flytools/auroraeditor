@@ -10,6 +10,8 @@ import geomagnetism from 'geomagnetism'
 
 import ImportData from './helpers/ImportData'
 import {DMStoDec} from './helpers/Convert'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 var Map = null;
@@ -216,6 +218,7 @@ function App() {
 
 
   function handleOnSetView() {
+    toast("Wow so easy !")
 
     /*const { current = {} } = mapRef;
     const { leafletElement: map } = current;
@@ -621,6 +624,8 @@ function App() {
         }).addTo(AuroraVfrRoute);
       });
     }
+
+    toast("Data successfully imported!")
   }
 
   
@@ -735,6 +740,18 @@ function App() {
         AuroraEditor 1
       </h1>
 
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   )
 }
