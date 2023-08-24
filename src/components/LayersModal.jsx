@@ -87,9 +87,9 @@ export default function LayersModal({SetBaseLayer, SetMensure }) {
                     ) : null}
 
 
-                    <div className="absolute my-2 w-20 left-5 top-20">
+                    <div className="absolute my-2 w-44 left-5 top-20">
                         <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-zinc-900  outline-none focus:outline-none p-2 backdrop-blur bg-black/70 text-center">
-                            <div className="py-0">
+                            <div className="py-2">
                                 <p className="text-base font-semibold text-zinc-900 text-xs dark:text-zinc-100 w-full text-center">
                                     SETTINGS
                                 </p>
@@ -111,6 +111,11 @@ export default function LayersModal({SetBaseLayer, SetMensure }) {
                                         )}
                                     </li>
                                 </ul>
+                            </div>
+                            <div className="py-2 pt-5">
+                                <p className="text-base font-semibold text-zinc-900 text-xs dark:text-zinc-100 w-full text-center">
+                                    LAYERS
+                                </p>
                             </div>
 
                         </div>

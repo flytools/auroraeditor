@@ -46,14 +46,30 @@
   text-transform: uppercase;
   text-align: center;
   margin-top: -1em;
-  background: #b91c1c;
+  background: #f59e0b;
   padding: 0px 2px;
   border: none;
   color: white;
   font-size: 14px;
 }
 
-.label-mensure::after, .label-mensure::before{
+.label-vfr-route {
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: -1em;
+  background: transparent;
+  padding: 0px 2px;
+  border: none;
+  color: #f59e0b;
+  font-size: 14px;
+  box-shadow: none;
+}
+
+.label-mensure::after, 
+.label-mensure::before,
+.label-vfr-route:after,
+.label-vfr-route:before{
   display: none;
 }
 

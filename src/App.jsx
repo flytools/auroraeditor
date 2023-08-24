@@ -25,6 +25,7 @@ var MensureEndMarker = L.layerGroup([]);;
 var MensureRoute = L.layerGroup([]);;
 
 var AuroraVfrRoute = L.featureGroup([]);;
+var AuroraVfrFix = L.featureGroup([]);;
 
 import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet'
 import { useMap, Rectangle } from "react-leaflet";
@@ -151,7 +152,7 @@ function App() {
             color: 'white',
             fill: true,
             fillOpacity: 1,
-            fillColor: '#b91c1c'
+            fillColor: '#f59e0b'
           })
           marker.addTo(MensureStartMarker)
         } else {
@@ -170,7 +171,7 @@ function App() {
           color: 'white',
           fill: true,
           fillOpacity: 1,
-          fillColor: '#b91c1c'
+          fillColor: '#f59e0b'
         })
 
         const info = geomagnetism.model().point([e2.latlng.lng, e2.latlng.lat]);
@@ -188,7 +189,7 @@ function App() {
 
         // draw the line between points
         L.polyline([MensureStartCoordinate, e2.latlng], {
-          color: '#b91c1c',
+          color: '#f59e0b',
           strokeWidth: '10px',
           weight: 7
         }).addTo(MensureRoute);
@@ -402,7 +403,7 @@ function App() {
       paint: {
         "text-color": '#fff',
         "text-halo-width": 1,
-        "text-halo-color": "#b91c1c",
+        "text-halo-color": "#f59e0b",
         "text-halo-width": 100
       }
     });
@@ -415,7 +416,7 @@ function App() {
         'line-cap': 'round',
       },
       'paint': {
-        'line-color': '#b91c1c',
+        'line-color': '#f59e0b',
         'line-opacity': 0.75,
         'line-width': 3,
       }
@@ -445,7 +446,7 @@ function App() {
       paint: {
         "text-color": '#fff',
         "text-halo-width": 1,
-        "text-halo-color": "#b91c1c",
+        "text-halo-color": "#f59e0b",
         "text-halo-width": 100
       }
     });
@@ -523,7 +524,7 @@ function App() {
           0,
           Math.PI * 2
         );
-        context.fillStyle = '#b91c1c';
+        context.fillStyle = '#f59e0b';
         context.strokeStyle = 'white';
         context.lineWidth = 4;
         context.fill();
@@ -615,13 +616,36 @@ function App() {
           points.push(new L.LatLng(coordinate[1], coordinate[0]))
         })
         L.polyline(points, {
-          color: '#b91c1c',
+          color: '#f59e0b',
           strokeWidth: '10px',
           weight: 7,
           options: {
             label: feature.label
           }
         }).addTo(AuroraVfrRoute);
+      });
+    }
+
+    if (type == 'vfi') {
+      if (clear) AuroraVfrFix.clearLayers()
+
+      var features = ImportData(data, type);
+
+      features.forEach(feature => {
+        var marker = new L.circleMarker(feature.coordinates, {
+          radius: 7,
+          color: 'white',
+          fill: true,
+          fillOpacity: 1,
+          fillColor: '#f59e0b'
+        })
+
+        marker.bindTooltip(feature.label + "<br>" + feature.description, {
+          permanent: true,
+          offset: [10, 10],
+          className: "label-vfr-route"
+        });
+        marker.addTo(AuroraVfrFix)
       });
     }
 
@@ -690,8 +714,8 @@ function App() {
       <MapContainer
         ref={mapRef}
         className='h-full fixed top-0 right-0 left-0 mt-16'
-        center={[-10, -60]}
-        zoom={5}
+        center={[-4, -38.5]/*[-10, -60]*/}
+        zoom={10/*5*/}
         scrollWheelZoom={true}
         maxZoom={22}
         minZoom={2}
@@ -701,7 +725,7 @@ function App() {
             console.log(IsMensure)
           },
         }}*/
-        layers={[MensureStartMarker, MensureEndMarker, MensureRoute, AuroraVfrRoute]}
+        layers={[MensureStartMarker, MensureEndMarker, MensureRoute, AuroraVfrRoute, AuroraVfrFix]}
       >
         <TileLayer ref={tileLayerRef}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
