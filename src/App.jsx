@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import LayersModal from './components/LayersModal'
 import ImportModal from './components/ImportModal'
+import DrawTextModal from './components/DrawTextModal'
 import './App.css'
 import axios from 'axios'
 //https://github.com/naturalatlas/geomagnetism
@@ -10,25 +11,30 @@ import geomagnetism from 'geomagnetism'
 
 import ImportData from './helpers/ImportData'
 import {DMStoDec} from './helpers/Convert'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 
-var Map = null;
-var BaseLayer = 'streets';
-var IsMensure = false;
+var Map = null
+var IsMensure = false
 var MensureMagVarDirection = 0;
-var MensureStartCoordinate = null;
+var MensureStartCoordinate = null
 
-var MensureStartMarker = L.layerGroup([]);;
-var MensureEndMarker = L.layerGroup([]);;
-var MensureRoute = L.layerGroup([]);;
+var MensureStartMarker = L.layerGroup([])
+var MensureEndMarker = L.layerGroup([])
+var MensureRoute = L.layerGroup([])
 
-var AuroraVfrRoute = L.featureGroup([]);;
-var AuroraVfrFix = L.featureGroup([]);;
+var AuroraVfrRoute = L.featureGroup([])
+var AuroraVfrFix = L.featureGroup([])
+
+var AuroraTemp = L.featureGroup([])
 
 import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet'
-import { useMap, Rectangle } from "react-leaflet";
+import { useMap, Rectangle } from "react-leaflet"
+
+
+var IsDrawText = false
+var DrawTextCoordinate = null
 
 
 
@@ -134,10 +140,7 @@ function App() {
     }
   }
 
-
-  const animateRef = useRef(false)
-
-  function SetViewOnClick({ animateRef }) {
+  function SetMensureOnClick() {
     const map = useMapEvent('click', (e) => {
 
       if (IsMensure) {
@@ -199,9 +202,31 @@ function App() {
     return null
   }
 
+  //draw text
+  const DrawTextRef = useRef();
+  const SetDrawText = (value) => {
+    IsDrawText = value
+    DrawTextRef.current.OpenCloseModal(value)
+  }
 
-  function SetViewOnClick2({ animateRef }) {
-    
+  function SetDrawTextOnClick() {
+    const map = useMapEvent('click', (e) => {
+      AuroraTemp.clearLayers()
+
+      if (IsDrawText) {
+        DrawTextRef.current.OpenCloseModal(true)
+        DrawTextCoordinate = e.latlng
+        var marker = L.circleMarker(e.latlng, {
+          radius: 7,
+          fill: true,
+          opacity:0,
+          fillOpacity: 1,
+          fillColor: 'red',
+          draggable: true
+        })
+        marker.addTo(AuroraTemp)
+      }
+    })
 
     return null
   }
@@ -221,334 +246,9 @@ function App() {
   function handleOnSetView() {
     toast("Wow so easy !")
 
-    /*const { current = {} } = mapRef;
-    const { leafletElement: map } = current;
-
-    map.setView([-40,-5], 14);*/
   }
 
 
-
-  /*BaseLayer = localStorage.getItem("baselayer");
-  useLayoutEffect(() => {
-    var bl = 'mapbox://styles/mapbox/streets-v12';
-    if (BaseLayer == 'sat') bl = 'mapbox://styles/mapbox/satellite-v9';
-    if (BaseLayer == 'topo') bl = 'mapbox://styles/mapbox/outdoors-v12';
-    if (BaseLayer == 'dark') bl = 'mapbox://styles/mapbox/dark-v11';
-
-    mapboxgl.accessToken = 'pk.eyJ1Ijoicm9kcmlnb3NpbSIsImEiOiJjbGF2ZngwNzgwNWNhM29qdW9idjl4cWdhIn0.0w3YOTHP8hqYC15F6_D80A';
-    Map = new mapboxgl.Map({
-      container: 'map',
-      style: bl,
-      center: [-50, -15],
-      zoom: 3,
-    });
-
-
-
-
-
-
-    Map.on('style.load', function () {
-      LoadSourceAndLayers()
-    });
-
-    Map.on('mousemove', (e) => {
-      if (IsMensure && MensureStartCoordinate != null) {
-        var currentCoordinate = e.lngLat
-
-        Map.getSource('mensure-route-source').setData({
-          'type': 'FeatureCollection',
-          'features': [{
-            'geometry': {
-              'type': 'LineString',
-              'coordinates': [[MensureStartCoordinate.lng, MensureStartCoordinate.lat], [e.lngLat.lng, e.lngLat.lat]]
-            }
-          }]
-        })
-
-        let distance = calculateDistance(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e.lngLat.lat, e.lngLat.lng).toFixed(1)
-        let direction = parseInt(calculateDirection(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e.lngLat.lat, e.lngLat.lng, MensureMagVarDirection))
-
-        Map.getSource('mensure-end-source').setData({
-          'type': 'FeatureCollection',
-          'features': [{
-            'geometry': {
-              'type': 'Point',
-              'coordinates': [e.lngLat.lng, e.lngLat.lat]
-            },
-            'properties': {
-              'ident': distance + "NM/" + direction + 'DEG'
-            }
-          }]
-        })
-      }
-    });
-
-    Map.on('style.load', function () {
-      Map.on('click', function (e) {
-        if (IsMensure) {
-          if (MensureStartCoordinate === null) {
-            console.log("cord", e.lngLat)
-            //axios.get(`http://127.0.0.1:8000/api/v3/direction/${e.lngLat.lat}/${e.lngLat.lng}`).then(response => {
-
-            MensureStartCoordinate = e.lngLat;
-
-            
-            const info = geomagnetism.model().point([e.lngLat.lng, e.lngLat.lat]);
-            MensureMagVarDirection = info.decl;
-
-              //add start point
-              Map.getSource('mensure-start-source').setData({
-                'type': 'FeatureCollection',
-                'features': [{
-                  'geometry': {
-                    'type': 'Point',
-                    'coordinates': [e.lngLat.lng, e.lngLat.lat]
-                  },
-                  'properties': {
-                    'ident': 'teste'
-                  }
-                }]
-              })
-
-            //})
-          } else {
-            console.log("cord2", e.lngLat)
-
-            MensureMagVarDirection = 0;
-            MensureStartCoordinate = null;
-          }
-        }
-      });
-    });
-
-    Map.on('mousemove', (e) => {
-      if (IsMensure && MensureStartCoordinate != null) {
-        var currentCoordinate = e.lngLat
-
-        Map.getSource('mensure-route-source').setData({
-          'type': 'FeatureCollection',
-          'features': [{
-            'geometry': {
-              'type': 'LineString',
-              'coordinates': [[MensureStartCoordinate.lng, MensureStartCoordinate.lat], [e.lngLat.lng, e.lngLat.lat]]
-            }
-          }]
-        })
-
-        let distance = calculateDistance(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e.lngLat.lat, e.lngLat.lng).toFixed(1)
-        let direction = parseInt(calculateDirection(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e.lngLat.lat, e.lngLat.lng, MensureMagVarDirection))
-
-        Map.getSource('mensure-end-source').setData({
-          'type': 'FeatureCollection',
-          'features': [{
-            'geometry': {
-              'type': 'Point',
-              'coordinates': [e.lngLat.lng, e.lngLat.lat]
-            },
-            'properties': {
-              'ident': distance + "NM/" + direction + 'DEG'
-            }
-          }]
-        })
-      }
-    });
-
-  });
-
-  const LoadSourceAndLayers = () => {
-
-    Map.addSource('vfr_route', { type: 'geojson', data: null });
-
-    Map.addLayer({
-      'id': 'vfr_route',
-      'type': 'line',
-      'source': 'vfr_route',
-      'layout': {
-        'line-join': 'round',
-        'line-cap': 'round'
-      },
-      'paint': {
-        'line-color': '#ff0000',
-        'line-width': 8
-      }
-    });
-
-
-    Map.addSource('mensure-start-source', {
-      'type': 'geojson',
-      'data': null
-    });
-
-    Map.addSource('mensure-route-source', {
-      'type': 'geojson',
-      'data': null
-    });
-
-    Map.addSource('mensure-end-source', {
-      'type': 'geojson',
-      'data': null
-    });
-
-    Map.addLayer({
-      'id': 'mensure-start',
-      'type': 'symbol',
-      'source': 'mensure-start-source',
-      'layout': {
-        'icon-image': 'dot-image-green',
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-      },
-      paint: {
-        "text-color": '#fff',
-        "text-halo-width": 1,
-        "text-halo-color": "#f59e0b",
-        "text-halo-width": 100
-      }
-    });
-
-    Map.addLayer({
-      'id': 'mensure-route',
-      'type': 'line',
-      'source': 'mensure-route-source',
-      'layout': {
-        'line-cap': 'round',
-      },
-      'paint': {
-        'line-color': '#f59e0b',
-        'line-opacity': 0.75,
-        'line-width': 3,
-      }
-    });
-
-    Map.addLayer({
-      'id': 'mensure-end',
-      'type': 'symbol',
-      'source': 'mensure-end-source',
-      'layout': {
-        'icon-image': 'dot-image-green',
-        'text-field': ['get', 'ident'],
-        'text-variable-anchor': ['bottom'],
-        'text-radial-offset': 0.75,
-        'text-justify': 'auto',
-        'icon-size': 1,
-
-        "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-        "text-size": 16,
-        "text-letter-spacing": 0.05,
-        "text-offset": [0, 10],
-        "text-transform": "uppercase",
-
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-      },
-      paint: {
-        "text-color": '#fff',
-        "text-halo-width": 1,
-        "text-halo-color": "#f59e0b",
-        "text-halo-width": 100
-      }
-    });
-
-    const size = 100;
-    const dot_purple = {
-      width: size,
-      height: size,
-      data: new Uint8Array(size * size * 4),
-
-      onAdd: function () {
-        const canvas = document.createElement('canvas');
-        canvas.width = this.width;
-        canvas.height = this.height;
-        this.context = canvas.getContext('2d');
-      },
-
-      render: function () {
-        const duration = 1000;
-        const t = (performance.now() % duration) / duration;
-
-        const radius = (size / 2) * 0.3;
-        const outerRadius = (size / 2) * 0.7 * t + radius;
-        const context = this.context;
-
-        context.beginPath();
-        context.arc(
-          this.width / 2,
-          this.height / 2,
-          radius,
-          0,
-          Math.PI * 2
-        );
-        context.fillStyle = '#581c87';
-        context.strokeStyle = 'white';
-        context.lineWidth = 4;
-        context.fill();
-        context.stroke();
-
-        this.data = context.getImageData(
-          0,
-          0,
-          this.width,
-          this.height
-        ).data;
-        return true;
-      }
-    };
-
-    const dot_green = {
-      width: size,
-      height: size,
-      data: new Uint8Array(size * size * 4),
-
-      onAdd: function () {
-        const canvas = document.createElement('canvas');
-        canvas.width = this.width;
-        canvas.height = this.height;
-        this.context = canvas.getContext('2d');
-      },
-
-      render: function () {
-        const duration = 1000;
-        const t = (performance.now() % duration) / duration;
-
-        const radius = (size / 2) * 0.3;
-        const outerRadius = (size / 2) * 0.7 * t + radius;
-        const context = this.context;
-
-        context.beginPath();
-        context.arc(
-          this.width / 2,
-          this.height / 2,
-          radius,
-          0,
-          Math.PI * 2
-        );
-        context.fillStyle = '#f59e0b';
-        context.strokeStyle = 'white';
-        context.lineWidth = 4;
-        context.fill();
-        context.stroke();
-
-        this.data = context.getImageData(
-          0,
-          0,
-          this.width,
-          this.height
-        ).data;
-        return true;
-      }
-    };
-
-    Map.addImage('dot-image-purple', dot_purple, { pixelRatio: 2 });
-
-    Map.addImage('dot-image-green', dot_green, { pixelRatio: 2 });
-  }*/
-
-
-  
-
-  
 
   //functions
   function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -601,7 +301,7 @@ function App() {
   const importRef = useRef();
 
   const handleOpenCloseImport = () => {
-    importRef.current.OpenCloseImport()
+    importRef.current.OpenCloseModal()
   }
 
   const handleImportData = (data, type, clear) => {
@@ -725,7 +425,7 @@ function App() {
             console.log(IsMensure)
           },
         }}*/
-        layers={[MensureStartMarker, MensureEndMarker, MensureRoute, AuroraVfrRoute, AuroraVfrFix]}
+        layers={[MensureStartMarker, MensureEndMarker, MensureRoute, AuroraVfrRoute, AuroraVfrFix, AuroraTemp]}
       >
         <TileLayer ref={tileLayerRef}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -737,15 +437,16 @@ function App() {
         <Marker
           position={[52.5134, 13.4225]}
         />
-        <SetViewOnClick animateRef={animateRef} />
-        <SetViewOnClick2 animateRef={animateRef} />
+        <SetMensureOnClick />
         <SetBoundsRectangles />
+        <SetDrawTextOnClick />
       </MapContainer>
 
       <LayersModal
         className="flex flex-none items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 mt-16 z-50"
         SetBaseLayer={SetBaseLayer}
         SetMensure={SetMensure}
+        SetDrawText={SetDrawText}
         href="#">
       </LayersModal>
 
@@ -759,6 +460,10 @@ function App() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </ImportModal>
+
+      <DrawTextModal
+        innerRef={DrawTextRef}
+      ></DrawTextModal>
 
       <h1 className="">
         AuroraEditor 1

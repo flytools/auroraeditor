@@ -13,13 +13,8 @@ export default function ImportModal({ innerRef, children, Map, defaultShowModal,
     const [typeOfFile, setTypeOfFile] = useState("");
     const [clear, setClear] = useState(true);
 
-
-    useEffect(() => {
-        
-    })
-
     useImperativeHandle(innerRef, () => ({
-        OpenCloseImport() {
+        OpenCloseModal() {
             setShowModal((showModal) ? false : true)
         }
     }));
@@ -139,7 +134,7 @@ export default function ImportModal({ innerRef, children, Map, defaultShowModal,
                                         <span className="ml-2">
                                             Clear layer
                                         </span>
-                                    </label>                                    
+                                    </label>
                                 </div>
 
                                     <div className="p-2">

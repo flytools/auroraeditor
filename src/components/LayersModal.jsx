@@ -1,13 +1,14 @@
 import React from "react"
 import { useState } from "react"
 
-export default function LayersModal({SetBaseLayer, SetMensure }) {
+export default function LayersModal({SetBaseLayer, SetMensure, SetDrawText }) {
     const [showModal, setShowModal] = React.useState(true);
 
     const [showBaseLayersModal, setShowBaseLayersModal] = React.useState(false);
     const [baseLayerValue, setBaseLayerValue] = useState((localStorage.getItem('baselayer') != 'sat' && localStorage.getItem('baselayer') != 'topo' && localStorage.getItem('baselayer') != 'dark') ? 'STRE' : localStorage.getItem('baselayer'));
 
     const [mensure, setMensure] = useState(false)
+    const [drawText, setDrawText] = useState(false)
 
     const handleBaseLayerClick = (e) => {
         SetBaseLayer(e.target.id)
@@ -31,6 +32,17 @@ export default function LayersModal({SetBaseLayer, SetMensure }) {
         setMensure((mensure) ? false : true)
         SetMensure((mensure) ? false : true)
     }
+
+    const handleDrawText = () => {
+        setDrawText((drawText) ? false : true)
+        SetDrawText((drawText) ? false : true)
+    }
+
+    //layers
+    let layers = [
+        { name: "vrt", label: "VFR ROUTE", color: "amber-600", visible: true },
+        { name: "vfi", label: "VFR FIXES", color: "red-600", visible: true },
+    ]
 
     return (
         <div>
@@ -110,12 +122,51 @@ export default function LayersModal({SetBaseLayer, SetMensure }) {
                                             <span onClick={handleMensure} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none" alt="Camada base do mapa" title="Camada base do mapa">MENSURE</span>                                            
                                         )}
                                     </li>
+                                    <li>
+                                        {(drawText) ? (
+                                            <span onClick={handleDrawText} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-emerald-500 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-emerald-400 select-none text-emerald-700" alt="Camada base do mapa" title="Camada base do mapa">DRAW TEXT</span>
+                                        ) : (
+                                            <span onClick={handleDrawText} id="base-modal-action" className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none" alt="Camada base do mapa" title="Camada base do mapa">DRAW TEXT</span>
+                                        )}
+                                    </li>
                                 </ul>
                             </div>
                             <div className="py-2 pt-5">
                                 <p className="text-base font-semibold text-zinc-900 text-xs dark:text-zinc-100 w-full text-center">
                                     LAYERS
                                 </p>
+                            </div>
+                            <div className="p-0">
+                                <ul className="flex flex-col space-y-1">
+                                    {layers.map((layer) =>
+                                        <li key={layer.name}>
+                                            <span onClick={null} id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
+                                                <label className="inline-flex relative items-top ml-1 mt-3 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="sr-only peer"
+                                                        checked={null}
+                                                        readOnly
+                                                    />
+                                                    <div
+                                                        onClick={() => {
+                                                            setClear(!null);
+                                                        }}
+                                                        className={"w-7 h-4 bg-neutral-700 rounded-full peer peer-focus:ring-red-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-" + layer.color}
+                                                    ></div>
+                                                    <span className="ml-2">
+                                                        {layer.label}
+                                                    </span>
+                                                </label>
+                                                <span onClick={null} className="block w-6 py-2 right-2 absolute text-xs font-semibold cursor-pointer hover:bg-zinc-700 rounded-md" alt="Camada base do mapa" title="Camada base do mapa">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                                                    </svg>
+                                                </span>
+                                            </span>
+                                        </li>
+                                    )}
+                                </ul>
                             </div>
 
                         </div>
