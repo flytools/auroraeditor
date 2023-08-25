@@ -10,7 +10,8 @@ import axios from 'axios'
 import geomagnetism from 'geomagnetism'
 
 import ImportData from './helpers/ImportData'
-import {DMStoDec} from './helpers/Convert'
+import { DMStoDec, MilesToDecimalDegrees } from './helpers/Convert'
+import { GetCharacter, GetLine } from './helpers/Characters'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -27,7 +28,8 @@ var MensureRoute = L.layerGroup([])
 var AuroraVfrRoute = L.featureGroup([])
 var AuroraVfrFix = L.featureGroup([])
 
-var AuroraTemp = L.featureGroup([])
+var AuroraMarkerTemp = L.featureGroup([])
+var AuroraPolylinesTemp = L.featureGroup([])
 
 import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet'
 import { useMap, Rectangle } from "react-leaflet"
@@ -35,6 +37,7 @@ import { useMap, Rectangle } from "react-leaflet"
 
 var IsDrawText = false
 var DrawTextCoordinate = null
+var DrawTextOptions = null
 
 
 
@@ -207,11 +210,18 @@ function App() {
   const SetDrawText = (value) => {
     IsDrawText = value
     DrawTextRef.current.OpenCloseModal(value)
+
+    if (!value) {
+      AuroraMarkerTemp.clearLayers()
+      AuroraPolylinesTemp.clearLayers()
+    } else {
+      toast("Click on the map to mark the landmark")
+    }
   }
 
   function SetDrawTextOnClick() {
     const map = useMapEvent('click', (e) => {
-      AuroraTemp.clearLayers()
+      AuroraMarkerTemp.clearLayers()
 
       if (IsDrawText) {
         DrawTextRef.current.OpenCloseModal(true)
@@ -224,12 +234,82 @@ function App() {
           fillColor: 'red',
           draggable: true
         })
-        marker.addTo(AuroraTemp)
+        marker.addTo(AuroraMarkerTemp)
+      }
+
+      if (DrawTextOptions != null) {
+        handleDrawText(DrawTextOptions)
       }
     })
 
     return null
   }
+
+
+  const handleDrawText = (options) => {
+    DrawTextOptions = options
+    AuroraPolylinesTemp.clearLayers()
+
+    //toast("Wow so easy !")
+    var startCoordinate = [DrawTextCoordinate.lat, DrawTextCoordinate.lng]
+    var width = options.size
+    var angle = options.rotate
+    var characterSpace = options.size * 0.25
+
+    var string = options.text//"0123456789°+-<>"
+
+    if (options.arrowLeft) string = '<' + string
+    if (options.arrowRight) string = string + '>'
+
+
+    var index = 0
+    string.split('').forEach(char => {
+      if (!"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890+-<>°".includes(char)) {
+        toast("Invalid Character '" + char + "'")
+      } else {
+        var coordinates = GetCharacter(char, startCoordinate, index, width, angle, characterSpace)
+        L.polyline(coordinates, {
+          color: '#0ea5e9',
+          strokeWidth: '10px',
+          weight: 3,
+          options: {
+            text: string,
+            label: string + ":" + char
+          }
+        }).addTo(AuroraPolylinesTemp);
+
+        index++
+      }
+    })
+
+    if (options.baseLine) {
+      var coordinates = GetLine(startCoordinate, index, width, angle, characterSpace)
+      L.polyline(coordinates, {
+        color: '#0ea5e9',
+        strokeWidth: '10px',
+        weight: 3,
+        options: {
+          text: string,
+          label: string + ":BASELINE"
+        }
+      }).addTo(AuroraPolylinesTemp);
+    }
+
+    if (options.topLine) {
+      var coordinates = GetLine(startCoordinate, index, width, angle, characterSpace, true)
+      L.polyline(coordinates, {
+        color: '#0ea5e9',
+        strokeWidth: '10px',
+        weight: 3,
+        options: {
+          text: string,
+          label: string + ":TOPLINE"
+        }
+      }).addTo(AuroraPolylinesTemp);
+    }
+  }
+
+  
 
 
 
@@ -244,9 +324,35 @@ function App() {
 
 
   function handleOnSetView() {
-    toast("Wow so easy !")
+    //toast("Wow so easy !")
+    var startCoordinate = [-4, -38.5]
+    var width = 30
+    var angle = 0
+    var characterSpace = 10
 
+    var string = "0123456789°+-<>"
+
+    var index = 0
+    string.split('').forEach(char => {
+      var coordinates = GetCharacter(char, startCoordinate, index, width, angle, characterSpace)
+      L.polyline(coordinates, {
+        color: '#f59e0b',
+        strokeWidth: '5px',
+        weight: 3,
+        options: {
+          text: string,
+          label:string + ":" + char
+        }
+      }).addTo(AuroraMarkerTemp);
+
+      index++
+    })
   }
+
+
+  
+
+  
 
 
 
@@ -425,7 +531,7 @@ function App() {
             console.log(IsMensure)
           },
         }}*/
-        layers={[MensureStartMarker, MensureEndMarker, MensureRoute, AuroraVfrRoute, AuroraVfrFix, AuroraTemp]}
+        layers={[MensureStartMarker, MensureEndMarker, MensureRoute, AuroraVfrRoute, AuroraVfrFix, AuroraMarkerTemp, AuroraPolylinesTemp]}
       >
         <TileLayer ref={tileLayerRef}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -463,6 +569,7 @@ function App() {
 
       <DrawTextModal
         innerRef={DrawTextRef}
+        handleDrawText={handleDrawText}
       ></DrawTextModal>
 
       <h1 className="">

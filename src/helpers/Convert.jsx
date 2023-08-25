@@ -139,3 +139,21 @@ export const longitudeDECtoDMS = (longitude) => {
 
   return coord;
 }
+
+export const MilesToDecimalDegrees = (miles, latitude) => {
+  return (miles * 1609.34) / (111.32 * 1000 * Math.cos(latitude * (Math.PI / 180)))
+}
+
+export const RotatePoint = (pointToRotate, centerPoint, angleInDegrees) => {
+  var angleInRadians = angleInDegrees * (Math.PI / 180);
+  var cosTheta = Math.cos(angleInRadians);
+  var sinTheta = Math.sin(angleInRadians);
+
+  var latitude = (sinTheta * (pointToRotate.Longitude - centerPoint.Longitude) +
+    cosTheta * (pointToRotate.Latitude - centerPoint.Latitude) + centerPoint.Latitude)
+
+  var longitude = (cosTheta * (pointToRotate.Longitude - centerPoint.Longitude) -
+    sinTheta * (pointToRotate.Latitude - centerPoint.Latitude) + centerPoint.Longitude)
+
+  return [latitude, longitude]
+}

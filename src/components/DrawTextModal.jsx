@@ -3,8 +3,102 @@ import { useState, ChangeEvent } from "react"
 import { useImperativeHandle } from 'react';
 
 
-export default function DrawTextModal({ innerRef, children }) {
+export default function DrawTextModal({ innerRef, children, handleDrawText }) {
     const [showModal, setShowModal] = React.useState(false);
+
+    const [text, setText] = useState('');
+    const [size, setSize] = useState(1);
+    const [rotate, setRotate] = useState(0);
+
+    const [arrowLeft, setArrowLeft] = useState(false);
+    const [arrowRight, setArrowRight] = useState(false);
+    const [baseLine, setBaseLine] = useState(false);
+    const [topLine, setTopLine] = useState(false);
+
+    const handleChangeText = (e) => {
+        setText(e.target.value.toUpperCase())
+        handleDrawText({
+            text: e.target.value.toUpperCase(),
+            size: size,
+            rotate: rotate,
+            arrowLeft: arrowLeft,
+            arrowRight: arrowRight,
+            topLine: topLine,
+            baseLine:baseLine
+        })
+    }
+    const handleChangeSize = (e) => {
+        setSize(e.target.value)
+        handleDrawText({
+            text: text,
+            size: e.target.value,
+            rotate: rotate,
+            arrowLeft: arrowLeft,
+            arrowRight: arrowRight,
+            topLine: topLine,
+            baseLine: baseLine
+        })
+    }
+    const handleChangeRotate = (e) => {
+        setRotate(e.target.value)
+        handleDrawText({
+            text: text,
+            size: size,
+            rotate: e.target.value,
+            arrowLeft: arrowLeft,
+            arrowRight: arrowRight,
+            topLine: topLine,
+            baseLine: baseLine
+        })
+    }
+
+
+
+    const handleChangeArrowLeft = (e) => {
+        handleDrawText({
+            text: text,
+            size: size,
+            rotate: rotate,
+            arrowLeft: e,
+            arrowRight: arrowRight,
+            topLine: topLine,
+            baseLine: baseLine
+        })
+    }
+    const handleChangeArrowRight = (e) => {
+        handleDrawText({
+            text: text,
+            size: size,
+            rotate: rotate,
+            arrowLeft: arrowLeft,
+            arrowRight: e,
+            topLine: topLine,
+            baseLine: baseLine
+        })
+    }
+    const handleChangeTopLine = (e) => {
+        handleDrawText({
+            text: text,
+            size: size,
+            rotate: rotate,
+            arrowLeft: arrowLeft,
+            arrowRight: arrowRight,
+            topLine: e,
+            baseLine: baseLine
+        })
+    }
+    const handleChangeBaseLine = (e) => {
+        handleDrawText({
+            text: text,
+            size: size,
+            rotate: rotate,
+            arrowLeft: arrowLeft,
+            arrowRight: arrowRight,
+            topLine: topLine,
+            baseLine: e
+        })
+    }
+
 
     useImperativeHandle(innerRef, () => ({
         OpenCloseModal(force=null) {
@@ -21,7 +115,16 @@ export default function DrawTextModal({ innerRef, children }) {
     }
 
     const handleAdd = (e) => {
-        setShowModal(false);
+        handleDrawText({
+            text: text,
+            size: size,
+            rotate: rotate,
+            arrowLeft: arrowLeft,
+            arrowRight: arrowRight,
+            topLine: topLine,
+            baseLine: baseLine
+        })
+        //setShowModal(false);
     }
 
     return (
@@ -41,86 +144,98 @@ export default function DrawTextModal({ innerRef, children }) {
                                     <div className="w-full flex-1 mx-1">
                                         <div className="flex">
                                             <span className="py-1 pr-2 text-neutral-500">TEXT:</span>
-                                            <input type="text" onChange={null} defaultValue={"TEXT"} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Text" autoFocus />
+                                            <input type="text" onChange={e => handleChangeText(e)} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Text" autoFocus />
                                         </div>
                                     </div>
                                     <div className="w-full flex-1 mx-1">
                                         <div className="flex">
                                             <span className="py-1 pr-2 text-neutral-500">SIZE:</span>
-                                            <input type="number" onChange={null} min={1} max={30} defaultValue={10} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Size" />
+                                            <input type="number" onChange={e => handleChangeSize(e)} min={1} max={30} defaultValue={10} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Size" />
                                         </div>
                                     </div>
                                     <div className="w-full flex-1 mx-1">
                                         <div className="flex">
                                             <span className="py-1 pr-2 text-neutral-500">ROTATE:</span>
-                                            <input type="number" onChange={null} min={0} max={360} defaultValue={0} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Rotate" />
+                                            <input type="number" onChange={e => handleChangeRotate(e)} min={0} max={360} defaultValue={0} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Rotate" />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex-1 flex flex-col md:flex-row mt-3">
                                     <div className="w-full flex-1 mx-1">
-                                        <span onClick={null} id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
+                                        <span id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
                                             <label className="inline-flex relative items-top ml-1 mt-3 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     className="sr-only peer"
+                                                    checked={arrowLeft}
                                                     readOnly
                                                 />
                                                 <div
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        setArrowLeft(!arrowLeft)
+                                                        handleChangeArrowLeft(!arrowLeft);
                                                     }}
-                                                    className={"w-7 h-4 bg-neutral-700 rounded-full peer peer-focus:ring-red-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-600"}
+                                                    className="w-11 h-6 bg-neutral-700 rounded-full peer  peer-focus:ring-emerald-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"
                                                 ></div>
                                                 <span className="ml-2">ARROW LEFT</span>
                                             </label>
                                         </span>
                                     </div>
                                     <div className="w-full flex-1 mx-1">
-                                        <span onClick={null} id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
+                                        <span id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
                                             <label className="inline-flex relative items-top ml-1 mt-3 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     className="sr-only peer"
+                                                    checked={arrowRight}
                                                     readOnly
                                                 />
                                                 <div
                                                     onClick={() => {
+                                                        setArrowRight(!arrowRight);
+                                                        handleChangeArrowRight(!arrowRight);
                                                     }}
-                                                    className={"w-7 h-4 bg-neutral-700 rounded-full peer peer-focus:ring-red-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-600"}
+                                                    className="w-11 h-6 bg-neutral-700 rounded-full peer  peer-focus:ring-emerald-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"
                                                 ></div>
                                                 <span className="ml-2">ARROW RIGHT</span>
                                             </label>
                                         </span>
                                     </div>
                                     <div className="w-full flex-1 mx-1">
-                                        <span onClick={null} id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
+                                        <span id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
                                             <label className="inline-flex relative items-top ml-1 mt-3 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     className="sr-only peer"
+                                                    checked={topLine}
                                                     readOnly
                                                 />
                                                 <div
                                                     onClick={() => {
+                                                        setTopLine(!topLine);
+                                                        handleChangeTopLine(!topLine);
                                                     }}
-                                                    className={"w-7 h-4 bg-neutral-700 rounded-full peer peer-focus:ring-red-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-600"}
+                                                    className="w-11 h-6 bg-neutral-700 rounded-full peer  peer-focus:ring-emerald-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"
                                                 ></div>
                                                 <span className="ml-2">TOP LINE</span>
                                             </label>
                                         </span>
                                     </div>
                                     <div className="w-full flex-1 mx-1">
-                                        <span onClick={null} id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
+                                        <span id="base-modal-action" className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md cursor-pointer" alt="Camada base do mapa" title="Camada base do mapa">
                                             <label className="inline-flex relative items-top ml-1 mt-3 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     className="sr-only peer"
+                                                    checked={baseLine}
                                                     readOnly
                                                 />
                                                 <div
                                                     onClick={() => {
+                                                        setBaseLine(!baseLine);
+                                                        handleChangeBaseLine(!baseLine);
                                                     }}
-                                                    className={"w-7 h-4 bg-neutral-700 rounded-full peer peer-focus:ring-red-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-600"}
+                                                    className="w-11 h-6 bg-neutral-700 rounded-full peer  peer-focus:ring-emerald-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"
                                                 ></div>
                                                 <span className="ml-2">BASE LINE</span>
                                             </label>
