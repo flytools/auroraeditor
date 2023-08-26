@@ -11,7 +11,7 @@ import ImportData from "./helpers/ImportData";
 import { GetCharacter, GetLine } from "./helpers/Characters";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { LatitudeDECtoDMS, LongitudeDECtoDMS } from "./helpers/Convert";
+import { LatitudeDECtoDMS, LongitudeDECtoDMS, CalculateDirection, CalculateDistance } from "./helpers/Convert";
 
 var Map = null;
 var IsMensure = false;
