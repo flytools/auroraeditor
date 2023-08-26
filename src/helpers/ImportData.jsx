@@ -1,4 +1,4 @@
-import { latitudeDMStoDec, longitudeDMStoDec } from './Convert'
+import { LatitudeDMStoDec, LongitudeDMStoDec } from './Convert'
 
 export default function ImportData(data, type) {
   if (type == 'vrt') {
@@ -15,9 +15,9 @@ export default function ImportData(data, type) {
     var elements = []
     for (const line of lines) {
       if ((elements.length == 0) || (lines[count][0] != lines[count - 1][0])) {
-        elements.push({ label: line[0], coordinates: [[longitudeDMStoDec(line[2]), latitudeDMStoDec(line[1])]] })
+        elements.push({ label: line[0], coordinates: [[LongitudeDMStoDec(line[2]), LatitudeDMStoDec(line[1])]] })
       } else {
-        elements[elements.length - 1].coordinates.push([longitudeDMStoDec(line[2]), latitudeDMStoDec(line[1])])
+        elements[elements.length - 1].coordinates.push([LongitudeDMStoDec(line[2]), LatitudeDMStoDec(line[1])])
       }
       count++
     }
@@ -37,7 +37,7 @@ export default function ImportData(data, type) {
 
     var elements = []
     for (const line of lines) {
-      elements.push({ label: line[0], description: line[1], coordinates: [latitudeDMStoDec(line[2]), longitudeDMStoDec(line[3])] })
+      elements.push({ label: line[0], description: line[1], coordinates: [LatitudeDMStoDec(line[2]), LongitudeDMStoDec(line[3])] })
     }
 
     return elements

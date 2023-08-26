@@ -1,19 +1,20 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import LayersModal from './components/LayersModal'
 import ImportModal from './components/ImportModal'
+import ExportModal from './components/ExportModal'
 import DrawTextModal from './components/DrawTextModal'
 import './App.css'
-import axios from 'axios'
 //https://github.com/naturalatlas/geomagnetism
 import geomagnetism from 'geomagnetism'
 
 import ImportData from './helpers/ImportData'
-import { DMStoDec, MilesToDecimalDegrees } from './helpers/Convert'
 import { GetCharacter, GetLine } from './helpers/Characters'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import {
+  LatitudeDECtoDMS,
+  LongitudeDECtoDMS,
+} from "./helpers/Convert";
 
 
 var Map = null
@@ -183,8 +184,8 @@ function App() {
         const info = geomagnetism.model().point([e2.latlng.lng, e2.latlng.lat]);
         MensureMagVarDirection = info.decl;
 
-        let distance = calculateDistance(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e2.latlng.lat, e2.latlng.lng).toFixed(1)
-        let direction = parseInt(calculateDirection(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e2.latlng.lat, e2.latlng.lng, MensureMagVarDirection))
+        let distance = CalculateDistance(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e2.latlng.lat, e2.latlng.lng).toFixed(1)
+        let direction = parseInt(CalculateDirection(MensureStartCoordinate.lat, MensureStartCoordinate.lng, e2.latlng.lat, e2.latlng.lng, MensureMagVarDirection))
 
         marker.bindTooltip(distance + "NM   " + direction + 'DEG', {
           permanent: true,
@@ -244,8 +245,7 @@ function App() {
 
     return null
   }
-
-
+  
   const handleDrawText = (options) => {
     DrawTextOptions = options
     AuroraPolylinesTemp.clearLayers()
@@ -255,6 +255,7 @@ function App() {
     var width = options.size
     var angle = options.rotate
     var characterSpace = options.size * 0.25
+    var color = (options.execute) ? '#f59e0b' : '#0ea5e9'
 
     var string = options.text//"0123456789°+-<>"
 
@@ -268,15 +269,17 @@ function App() {
         toast("Invalid Character '" + char + "'")
       } else {
         var coordinates = GetCharacter(char, startCoordinate, index, width, angle, characterSpace)
-        L.polyline(coordinates, {
-          color: '#0ea5e9',
-          strokeWidth: '10px',
+        var polyline = L.polyline(coordinates, {
+          color: color,
+          strokeWidth: "10px",
           weight: 3,
-          options: {
+          properties: {
             text: string,
-            label: string + ":" + char
-          }
-        }).addTo(AuroraPolylinesTemp);
+            label: string + ":" + char,
+          },
+        });
+          
+        polyline.addTo((options.execute) ? AuroraVfrRoute : AuroraPolylinesTemp)
 
         index++
       }
@@ -284,126 +287,41 @@ function App() {
 
     if (options.baseLine) {
       var coordinates = GetLine(startCoordinate, index, width, angle, characterSpace)
-      L.polyline(coordinates, {
-        color: '#0ea5e9',
-        strokeWidth: '10px',
+      var polyline = L.polyline(coordinates, {
+        color: color,
+        strokeWidth: "10px",
         weight: 3,
-        options: {
+        properties: {
           text: string,
-          label: string + ":BASELINE"
-        }
-      }).addTo(AuroraPolylinesTemp);
+          label: string + ":BASELINE",
+        },
+      });
+      polyline.addTo((options.execute) ? AuroraVfrRoute : AuroraPolylinesTemp)
     }
 
     if (options.topLine) {
       var coordinates = GetLine(startCoordinate, index, width, angle, characterSpace, true)
-      L.polyline(coordinates, {
-        color: '#0ea5e9',
-        strokeWidth: '10px',
+      var polyline = L.polyline(coordinates, {
+        color: color,
+        strokeWidth: "10px",
         weight: 3,
-        options: {
+        properties: {
           text: string,
-          label: string + ":TOPLINE"
-        }
-      }).addTo(AuroraPolylinesTemp);
+          label: string + ":TOPLINE",
+        },
+      });
+      polyline.addTo((options.execute) ? AuroraVfrRoute : AuroraPolylinesTemp)
+    }
+
+    if (options.execute) {
+      AuroraMarkerTemp.clearLayers()
+      //IsDrawText = false
+      DrawTextCoordinate = null
+      DrawTextOptions.execute = false
     }
   }
 
-  
-
-
-
-
-
-  
-
-
-  useEffect(() => {
-
-  });
-
-
-  function handleOnSetView() {
-    //toast("Wow so easy !")
-    var startCoordinate = [-4, -38.5]
-    var width = 30
-    var angle = 0
-    var characterSpace = 10
-
-    var string = "0123456789°+-<>"
-
-    var index = 0
-    string.split('').forEach(char => {
-      var coordinates = GetCharacter(char, startCoordinate, index, width, angle, characterSpace)
-      L.polyline(coordinates, {
-        color: '#f59e0b',
-        strokeWidth: '5px',
-        weight: 3,
-        options: {
-          text: string,
-          label:string + ":" + char
-        }
-      }).addTo(AuroraMarkerTemp);
-
-      index++
-    })
-  }
-
-
-  
-
-  
-
-
-
-  //functions
-  function calculateDistance(lat1, lon1, lat2, lon2) {
-    var R = 6371000;
-    var dLat = toRadians(lat2 - lat1);
-    var dLon = toRadians(lon2 - lon1);
-    var lat1 = toRadians(lat1);
-    var lat2 = toRadians(lat2);
-
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c;
-    return d * 0.000539957;
-  };
-
-  function calculateDirection(lat1, lon1, lat2, lon2, mag) {
-    var direction = 0;
-
-    lat1 = toRadians(lat1);
-    lon1 = toRadians(lon1);
-    lat2 = toRadians(lat2);
-    lon2 = toRadians(lon2);
-
-    var y = Math.sin(lon2 - lon1) * Math.cos(lat2);
-    var x = Math.cos(lat1) * Math.sin(lat2) -
-      Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
-    var brng = Math.atan2(y, x);
-    brng = toDegrees(brng);
-    direction = (brng + 360) % 360;
-
-    direction = direction - mag;
-
-    if (direction > 360) {
-      direction = direction - 360;
-    }
-
-    return direction;
-  };
-
-  function toRadians(degrees) {
-    return degrees * Math.PI / 180;
-  };
-
-  function toDegrees(radians) {
-    return radians * 180 / Math.PI;
-  };
-
-
+  //import
   const importRef = useRef();
 
   const handleOpenCloseImport = () => {
@@ -422,12 +340,12 @@ function App() {
           points.push(new L.LatLng(coordinate[1], coordinate[0]))
         })
         L.polyline(points, {
-          color: '#f59e0b',
-          strokeWidth: '10px',
+          color: "#f59e0b",
+          strokeWidth: "10px",
           weight: 7,
-          options: {
-            label: feature.label
-          }
+          properties: {
+            label: feature.label,
+          },
         }).addTo(AuroraVfrRoute);
       });
     }
@@ -456,6 +374,63 @@ function App() {
     }
 
     toast("Data successfully imported!")
+  }
+
+
+  const exportRef = useRef();
+
+  const handleOpenCloseExport = () => {
+    exportRef.current.OpenCloseModal()
+  }
+
+  const handleExportData = (data, type) => {
+    var lines = ''
+
+    AuroraVfrRoute.eachLayer(function (feature) {
+      var label = feature.options.properties.label
+      var coordinates = feature._latlngs
+
+      lines += ('//' + label + '\r\n')
+
+      coordinates.forEach(coordinate => {
+          lines += (label + ';' + LatitudeDECtoDMS(coordinate.lat) + ';' + LongitudeDECtoDMS(coordinate.lng) + ';\r\n'
+          );
+      })
+
+      lines += "\r\n";
+    });
+    
+    return lines
+  }
+
+
+
+
+
+  function handleExport() {
+    //toast("Wow so easy !")
+    var startCoordinate = [-4, -38.5]
+    var width = 30
+    var angle = 0
+    var characterSpace = 10
+
+    var string = "0123456789°+-<>"
+
+    var index = 0
+    string.split('').forEach(char => {
+      var coordinates = GetCharacter(char, startCoordinate, index, width, angle, characterSpace)
+      L.polyline(coordinates, {
+        color: "#f59e0b",
+        strokeWidth: "5px",
+        weight: 3,
+        properties: {
+          text: string,
+          label: string + ":" + char,
+        },
+      }).addTo(AuroraMarkerTemp);
+
+      index++
+    })
   }
 
   
@@ -489,7 +464,7 @@ function App() {
                 </svg>
                 <span>Import</span>
               </a>
-              <a onClick={handleOnSetView} className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer">
+              <a onClick={handleOpenCloseExport} className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                   <path fillRule="evenodd" d="M9.75 6.75h-3a3 3 0 00-3 3v7.5a3 3 0 003 3h7.5a3 3 0 003-3v-7.5a3 3 0 00-3-3h-3V1.5a.75.75 0 00-1.5 0v5.25zm0 0h1.5v5.69l1.72-1.72a.75.75 0 111.06 1.06l-3 3a.75.75 0 01-1.06 0l-3-3a.75.75 0 111.06-1.06l1.72 1.72V6.75z" clipRule="evenodd" />
                   <path d="M7.151 21.75a2.999 2.999 0 002.599 1.5h7.5a3 3 0 003-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 01-4.5 4.5H7.151z" />
@@ -566,6 +541,17 @@ function App() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </ImportModal>
+
+      <ExportModal
+        innerRef={exportRef}
+        className="flex flex-none items-center h-full bg-neutral-900 shadow-sm fixed top-0 right-0 left-0 mt-16 z-50"
+        Map={Map}
+        handleExportData={handleExportData}
+        href="#">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </ExportModal>
 
       <DrawTextModal
         innerRef={DrawTextRef}

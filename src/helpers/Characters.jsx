@@ -1,5 +1,5 @@
 import { space } from 'postcss/lib/list'
-import { latitudeDMStoDec, longitudeDMStoDec, MilesToDecimalDegrees } from './Convert'
+import { LatitudeDMStoDec, LongitudeDMStoDec, MilesToDecimalDegrees } from './Convert'
 
 export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0, characterSpace) => {
   var x = referenceCoordinate[1]

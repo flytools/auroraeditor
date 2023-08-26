@@ -29,7 +29,7 @@ export const DMStoDec = (coordinate) => {
 }
 
 
-export const latitudeDMStoDec = (latitude) => {
+export const LatitudeDMStoDec = (latitude) => {
   //N038.10.04.627
 
   var direction = latitude.substring(0, 1);
@@ -45,7 +45,7 @@ export const latitudeDMStoDec = (latitude) => {
   return dd
 }
 
-export const longitudeDMStoDec = (latitude) => {
+export const LongitudeDMStoDec = (latitude) => {
   //N038.10.04.627
 
   var direction = latitude.substring(0, 1);
@@ -100,7 +100,7 @@ export const DECtoDMS = (coordinate) => {
   return coord;
 }
 
-export const latitudeDECtoDMS = (latitude) => {
+export const LatitudeDECtoDMS = (latitude) => {
   var coord = [];
 
   var absDd = Math.abs(latitude);
@@ -120,7 +120,7 @@ export const latitudeDECtoDMS = (latitude) => {
   return coord;
 }
 
-export const longitudeDECtoDMS = (longitude) => {
+export const LongitudeDECtoDMS = (longitude) => {
   var coord = [];
 
   var absDd = Math.abs(longitude);
@@ -156,4 +156,55 @@ export const RotatePoint = (pointToRotate, centerPoint, angleInDegrees) => {
     sinTheta * (pointToRotate.Latitude - centerPoint.Latitude) + centerPoint.Longitude)
 
   return [latitude, longitude]
+}
+
+
+
+export const CalculateDistance = (lat1, lon1, lat2, lon2) => {
+  var R = 6371000
+  var dLat = toRadians(lat2 - lat1)
+  var dLon = toRadians(lon2 - lon1)
+  var lat1 = toRadians(lat1)
+  var lat2 = toRadians(lat2)
+
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2)
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  var d = R * c
+  return d * 0.000539957
+}
+
+export const CalculateDirection = (lat1, lon1, lat2, lon2, mag) => {
+  var direction = 0
+
+  lat1 = toRadians(lat1)
+  lon1 = toRadians(lon1)
+  lat2 = toRadians(lat2)
+  lon2 = toRadians(lon2)
+
+  var y = Math.sin(lon2 - lon1) * Math.cos(lat2)
+  var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)
+  var brng = Math.atan2(y, x)
+  brng = toDegrees(brng)
+  direction = (brng + 360) % 360
+
+  direction = direction - mag
+
+  if (direction > 360) {
+    direction = direction - 360
+  }
+
+  return direction
+}
+
+export const toRadians = (degrees) => {
+  return degrees * Math.PI / 180
+}
+
+export const toDegrees = (radians) => {
+  return radians * 180 / Math.PI
+}
+
+function zeroPad(num, places) {
+  var zero = places - num.toString().length + 1
+  return Array(+(zero > 0 && zero)).join("0") + num
 }

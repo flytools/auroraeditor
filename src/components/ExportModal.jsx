@@ -2,18 +2,17 @@ import React from "react";
 import { useState } from "react";
 import { useImperativeHandle } from "react";
 
-export default function ImportModal({
+export default function ExportModal({
   innerRef,
   children,
   Map,
   defaultShowModal,
-  handleImportData,
+  handleExportData,
 }) {
   const [showModal, setShowModal] = useState(false);
 
   const [content, setcontent] = useState("");
   const [typeOfFile, setTypeOfFile] = useState("");
-  const [clear, setClear] = useState(true);
 
   useImperativeHandle(innerRef, () => ({
     OpenCloseModal() {
@@ -29,21 +28,8 @@ export default function ImportModal({
     setTypeOfFile(e.target.value);
   };
 
-    const handleSave = () => {
-    handleImportData(content, typeOfFile, clear);
-  };
-
-  const handleFile = (e) => {
-    e.preventDefault();
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const text = e.target.result;
-      setcontent(text);
-    };
-    reader.readAsText(e.target.files[0]);
-
-    const extension = e.target.files[0].name.split(".")[1];
-    setTypeOfFile(extension);
+  const handleSave = () => {
+    setcontent(handleExportData(content, typeOfFile))
   };
 
   return (
@@ -84,32 +70,11 @@ export default function ImportModal({
 
               <div className="rounded-t dark:border-neutral-600">
                 <h3 className="text-base font-semibold text-neutral-900 lg:text-xl dark:text-neutral-200 text-center">
-                  IMPORT
+                  EXPORT
                 </h3>
               </div>
 
               <div>
-                <div className="p-2">
-                  <input
-                    onChange={(e) => handleFile(e)}
-                    className="block p-2.5 w-full text-sm text-neutral-900 bg-neutral-50 rounded-lg border border-neutral-300 focus:ring-emerald-800 focus:border-emerald-800 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800"
-                    id="file_input"
-                    type="file"
-                  ></input>
-                </div>
-
-                <div className="p-2">or insert text</div>
-
-                <div className="p-2">
-                  <textarea
-                    id="content"
-                    rows="15"
-                    className="block p-2.5 w-full text-sm text-neutral-900 bg-neutral-50 rounded-lg border border-neutral-300 focus:ring-emerald-800 focus:border-emerald-800 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800"
-                    placeholder="Insert sectorfile data here..."
-                    defaultValue={content}
-                  />
-                </div>
-
                 <div className="p-2">type of file</div>
 
                 <div className="p-2">
@@ -124,26 +89,27 @@ export default function ImportModal({
                     <option value="vfi">VFR INFO POINT (.vfi)</option>
                   </select>
                 </div>
+                <div className="p-2"></div>
 
-                <div className="p-2">
-                  <label className="inline-flex relative items-center mr-5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={clear}
-                      readOnly
-                    />
-                    <div
-                      onClick={() => {
-                        setClear(!clear);
-                      }}
-                      className="w-11 h-6 bg-neutral-700 rounded-full peer  peer-focus:ring-emerald-500  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"
-                    ></div>
-                    <span className="ml-2">Clear layer</span>
-                  </label>
+                <div className="p-2 pb-12 relative h-auto w-full">
+                  <button
+                    id="save"
+                    onClick={() => handleSave()}
+                    className="absolute right-2 p-0 px-2 w-auto text-md font-semibold text-neutral-400 bg-neutral-900 rounded-md border-2 border-emerald-800 cursor-pointer hover:text-neutral-300 hover:border-emerald-800"
+                  >
+                    EXPORT
+                  </button>
                 </div>
 
-                <div className="p-2"></div>
+                <div className="p-2">
+                  <textarea
+                    id="content"
+                    rows="15"
+                    className="block p-2.5 w-full text-sm text-neutral-900 bg-neutral-50 rounded-lg border border-neutral-300 focus:ring-emerald-800 focus:border-emerald-800 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800"
+                    placeholder="Insert sectorfile data here..."
+                    defaultValue={content}
+                  />
+                </div>
 
                 <div className="p-2 pb-6 relative h-auto w-full">
                   <button

@@ -24,7 +24,8 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
             arrowLeft: arrowLeft,
             arrowRight: arrowRight,
             topLine: topLine,
-            baseLine:baseLine
+            baseLine: baseLine,
+            execute: false
         })
     }
     const handleChangeSize = (e) => {
@@ -36,7 +37,8 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
             arrowLeft: arrowLeft,
             arrowRight: arrowRight,
             topLine: topLine,
-            baseLine: baseLine
+            baseLine: baseLine,
+            execute: false
         })
     }
     const handleChangeRotate = (e) => {
@@ -48,12 +50,13 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
             arrowLeft: arrowLeft,
             arrowRight: arrowRight,
             topLine: topLine,
-            baseLine: baseLine
+            baseLine: baseLine,
+            execute: false
         })
     }
 
 
-
+    
     const handleChangeArrowLeft = (e) => {
         handleDrawText({
             text: text,
@@ -62,7 +65,8 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
             arrowLeft: e,
             arrowRight: arrowRight,
             topLine: topLine,
-            baseLine: baseLine
+            baseLine: baseLine,
+            execute: false
         })
     }
     const handleChangeArrowRight = (e) => {
@@ -73,7 +77,8 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
             arrowLeft: arrowLeft,
             arrowRight: e,
             topLine: topLine,
-            baseLine: baseLine
+            baseLine: baseLine,
+            execute: false
         })
     }
     const handleChangeTopLine = (e) => {
@@ -84,7 +89,8 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
             arrowLeft: arrowLeft,
             arrowRight: arrowRight,
             topLine: e,
-            baseLine: baseLine
+            baseLine: baseLine,
+            execute: false
         })
     }
     const handleChangeBaseLine = (e) => {
@@ -95,7 +101,8 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
             arrowLeft: arrowLeft,
             arrowRight: arrowRight,
             topLine: topLine,
-            baseLine: e
+            baseLine: e,
+            execute: false
         })
     }
 
@@ -122,7 +129,8 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
             arrowLeft: arrowLeft,
             arrowRight: arrowRight,
             topLine: topLine,
-            baseLine: baseLine
+            baseLine: baseLine,
+            execute: true
         })
         //setShowModal(false);
     }
@@ -150,13 +158,13 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
                                     <div className="w-full flex-1 mx-1">
                                         <div className="flex">
                                             <span className="py-1 pr-2 text-neutral-500">SIZE:</span>
-                                            <input type="number" onChange={e => handleChangeSize(e)} min={1} max={30} defaultValue={10} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Size" />
+                                            <input type="number" onChange={e => handleChangeSize(e)} min={1} max={30} defaultValue={1} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Size" />
                                         </div>
                                     </div>
                                     <div className="w-full flex-1 mx-1">
                                         <div className="flex">
                                             <span className="py-1 pr-2 text-neutral-500">ROTATE:</span>
-                                            <input type="number" onChange={e => handleChangeRotate(e)} min={0} max={360} defaultValue={0} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Rotate" />
+                                            <input type="number" onChange={e => handleChangeRotate(e)} min={-360} max={360} defaultValue={0} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Rotate" />
                                         </div>
                                     </div>
                                 </div>
