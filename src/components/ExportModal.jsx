@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useImperativeHandle } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function ExportModal({
   innerRef,
@@ -16,21 +17,26 @@ export default function ExportModal({
 
   useImperativeHandle(innerRef, () => ({
     OpenCloseModal() {
-      setShowModal(showModal ? false : true);
-    },
-  }));
+      setShowModal(showModal ? false : true)
+    }
+  }))
 
   const handleShowModal = (value) => {
-    setShowModal(value);
-  };
+    setShowModal(value)
+  }
 
   const handleTypeOfFileChange = (e) => {
-    setTypeOfFile(e.target.value);
-  };
+    setTypeOfFile(e.target.value)
+  }
 
   const handleSave = () => {
-    setcontent(handleExportData(content, typeOfFile))
-  };
+    setcontent(handleExportData(typeOfFile))
+  }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content)
+    toast("Copied to clipboard!");
+  }
 
   return (
     <div>
@@ -106,18 +112,18 @@ export default function ExportModal({
                     id="content"
                     rows="15"
                     className="block p-2.5 w-full text-sm text-neutral-900 bg-neutral-50 rounded-lg border border-neutral-300 focus:ring-emerald-800 focus:border-emerald-800 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800"
-                    placeholder="Insert sectorfile data here..."
+                    placeholder="Result data here..."
                     defaultValue={content}
                   />
                 </div>
 
                 <div className="p-2 pb-6 relative h-auto w-full">
                   <button
-                    id="save"
-                    onClick={() => handleSave()}
-                    className="absolute right-2 p-0 px-2 w-auto text-md font-semibold text-neutral-400 bg-neutral-900 rounded-md border-2 border-emerald-800 cursor-pointer hover:text-neutral-300 hover:border-emerald-800"
+                    id="copy"
+                    onClick={() => handleCopy()}
+                    className="absolute right-2 p-0 px-2 w-auto text-md font-semibold text-neutral-400 bg-neutral-900 rounded-md border-2 border-neutral-800 cursor-pointer hover:text-neutral-300 hover:border-neutral-800"
                   >
-                    IMPORTAR
+                    COPY TO CLIPBOARD
                   </button>
                 </div>
               </div>
