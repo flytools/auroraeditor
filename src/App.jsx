@@ -31,6 +31,8 @@ var AuroraPolylinesTemp = L.featureGroup([]);
 
 var AuroraLoadImage = L.featureGroup([]);
 
+var IsDelete = false
+
 import {
   MapContainer,
   TileLayer,
@@ -314,7 +316,11 @@ function App() {
           },
         });
 
-        polyline.addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp);
+        polyline
+          .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
+          .on("click", (e) => {
+            if (IsDelete) e.target.remove();
+          });
 
         index++;
       }
@@ -337,7 +343,11 @@ function App() {
           label: string + ":BASELINE",
         },
       });
-      polyline.addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp);
+      polyline
+        .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
+        .on("click", (e) => {
+          if (IsDelete) e.target.remove();
+        });
     }
 
     if (options.topLine) {
@@ -359,7 +369,11 @@ function App() {
           label: string + ":TOPLINE",
         },
       });
-      polyline.addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp);
+      polyline
+        .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
+        .on("click", (e) => {
+          if (IsDelete) e.target.remove();
+        });
     }
 
     if (options.execute) {
@@ -411,6 +425,15 @@ function App() {
     mapRef.current.fitBounds(AuroraLoadImage.getBounds());
   };
 
+  //delete feature
+  const SetDeleteFeature = (value) => {
+    IsDelete = value
+  }
+
+  const SetDeleteFeatureOnClick = () => {
+    return null
+  }
+
   //import
   const importRef = useRef();
 
@@ -439,7 +462,11 @@ function App() {
           properties: {
             label: feature.label,
           },
-        }).addTo(AuroraVfrRoute);
+        })
+          .addTo(AuroraVfrRoute)
+          .on("click", (e) => {
+            if (IsDelete) e.target.remove();
+          });
       });
       mapRef.current.fitBounds(AuroraVfrRoute.getBounds());
     }
@@ -467,7 +494,10 @@ function App() {
           offset: [10, 10],
           className: "label-vfr-route",
         });
-        marker.addTo(AuroraVfrFix);
+        marker.addTo(AuroraVfrFix)
+          .on("click", (e) => {
+                if (IsDelete) e.target.remove();
+              });
       });
       mapRef.current.fitBounds(AuroraVfrFix.getBounds());
     }
@@ -718,6 +748,7 @@ function App() {
         <SetMensureOnClick />
         <SetBoundsRectangles />
         <SetDrawTextOnClick />
+        <SetDeleteFeatureOnClick />
       </MapContainer>
 
       <LayersModal
@@ -726,6 +757,7 @@ function App() {
         SetMensure={SetMensure}
         SetDrawText={SetDrawText}
         setLoadImage={setLoadImage}
+        SetDeleteFeature={SetDeleteFeature}
         href="#"
       ></LayersModal>
 
