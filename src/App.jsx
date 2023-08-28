@@ -371,7 +371,10 @@ function App() {
   const importRef = useRef();
 
   const handleOpenCloseImport = () => {
-    importRef.current.OpenCloseModal();
+    importRef.current.OpenCloseModal()
+    exportRef.current.OpenCloseModal(false)
+    SetDrawText(false)
+    SetMensure(false)
   };
 
   const handleImportData = (data, type, clear) => {
@@ -426,10 +429,14 @@ function App() {
     toast("Data successfully imported!");
   };
 
+  //export
   const exportRef = useRef();
 
   const handleOpenCloseExport = () => {
-    exportRef.current.OpenCloseModal();
+    exportRef.current.OpenCloseModal()
+    importRef.current.OpenCloseModal(false);
+    SetDrawText(false)
+    SetMensure(false)
   };
 
   const handleExportData = (type) => {

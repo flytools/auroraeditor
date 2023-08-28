@@ -11,7 +11,7 @@ export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0,
   x = x + (index * (width + MilesToDecimalDegrees(characterSpace, y)))
 
   if (secondLine) {
-    y = y + height + (MilesToDecimalDegrees(characterSpace, y) *2)
+    y = y + height + (MilesToDecimalDegrees(characterSpace, y) * 2)
   }
 
   var coordinates = GetCharCoordinates(char, y, x, width, height)

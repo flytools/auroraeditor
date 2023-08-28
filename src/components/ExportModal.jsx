@@ -16,8 +16,12 @@ export default function ExportModal({
   const [typeOfFile, setTypeOfFile] = useState("");
 
   useImperativeHandle(innerRef, () => ({
-    OpenCloseModal() {
-      setShowModal(showModal ? false : true)
+    OpenCloseModal(force=null) {
+      if (force !== null) {
+        setShowModal(force);
+      } else {
+        setShowModal(showModal ? false : true);
+      }
     }
   }))
 

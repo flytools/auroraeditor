@@ -16,8 +16,12 @@ export default function ImportModal({
   const [clear, setClear] = useState(true);
 
   useImperativeHandle(innerRef, () => ({
-    OpenCloseModal() {
-      setShowModal(showModal ? false : true);
+    OpenCloseModal(force = null) {
+      if (force !== null) {
+        setShowModal(force);
+      } else {
+        setShowModal(showModal ? false : true);
+      }
     },
   }));
 
