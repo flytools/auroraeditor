@@ -158,7 +158,7 @@ export default function DrawTextModal({ innerRef, children, handleDrawText }) {
                                     <div className="w-full flex-1 mx-1">
                                         <div className="flex">
                                             <span className="py-1 pr-2 text-neutral-500">SIZE:</span>
-                                            <input type="number" onChange={e => handleChangeSize(e)} min={1} max={30} defaultValue={1} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Size" />
+                                            <input type="number" onChange={e => handleChangeSize(e)} min={0.1} max={30} step={0.1} defaultValue={1} className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800" placeholder="Size" />
                                         </div>
                                     </div>
                                     <div className="w-full flex-1 mx-1">

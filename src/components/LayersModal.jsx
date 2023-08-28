@@ -49,7 +49,7 @@ export default function LayersModal({SetBaseLayer, SetMensure, SetDrawText }) {
         {showModal ? (
           <div>
             {showBaseLayersModal ? (
-              <div className="absolute my-2 w-72 left-32 top-20">
+              <div className="absolute my-2 w-72 left-52 top-20">
                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-zinc-900  outline-none focus:outline-none p-2 backdrop-blur bg-black/70 text-center items-center">
                   <button
                     onClick={() => handleShowBaseLayersModal(false)}

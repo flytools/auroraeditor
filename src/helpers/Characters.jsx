@@ -1,7 +1,7 @@
 import { space } from 'postcss/lib/list'
 import { LatitudeDMStoDec, LongitudeDMStoDec, MilesToDecimalDegrees } from './Convert'
 
-export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0, characterSpace) => {
+export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0, characterSpace, secondLine=false) => {
   var x = referenceCoordinate[1]
   var y = referenceCoordinate[0]
 
@@ -9,6 +9,10 @@ export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0,
   var height = width
 
   x = x + (index * (width + MilesToDecimalDegrees(characterSpace, y)))
+
+  if (secondLine) {
+    y = y + height + (MilesToDecimalDegrees(characterSpace, y) *2)
+  }
 
   var coordinates = GetCharCoordinates(char, y, x, width, height)
 
@@ -21,34 +25,46 @@ export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0,
 }
 
 
-export const GetLine = (referenceCoordinate, index, width, angle = 0, characterSpace, isTop=false) => {
-  var x = referenceCoordinate[1]
-  var y = referenceCoordinate[0]
+export const GetLine = (
+  referenceCoordinate,
+  index,
+  width,
+  angle = 0,
+  characterSpace,
+  isTop = false,
+  secondLine = false
+) => {
+  var x = referenceCoordinate[1];
+  var y = referenceCoordinate[0];
 
-  var width = MilesToDecimalDegrees(width, y)
-  var space = MilesToDecimalDegrees(characterSpace, y)
+  var width = MilesToDecimalDegrees(width, y);
+  var space = MilesToDecimalDegrees(characterSpace, y);
 
-  var totalWidth = ((width + space) * index) - space
+  var totalWidth = (width + space) * index - space;
+
+  if (secondLine) {
+    y = y + width + MilesToDecimalDegrees(characterSpace, y) * 2;
+  }
 
   var coordinates = [
-    [referenceCoordinate[0] - space, referenceCoordinate[1]],
-    [referenceCoordinate[0] - space, referenceCoordinate[1] + totalWidth]
-  ]
+    [y - space, x],
+    [y - space, x + totalWidth],
+  ];
 
   if (isTop) {
     coordinates = [
-      [referenceCoordinate[0] + width + space, referenceCoordinate[1]],
-      [referenceCoordinate[0] + width + space, referenceCoordinate[1] + totalWidth]
-    ]
+      [y + width + space, x],
+      [y + width + space, x + totalWidth],
+    ];
   }
 
-  var finalCoordinates = []
-  coordinates.forEach(coordinate => {
-    finalCoordinates.push(RotatePoint(coordinate, referenceCoordinate, angle))
-  })
+  var finalCoordinates = [];
+  coordinates.forEach((coordinate) => {
+    finalCoordinates.push(RotatePoint(coordinate, referenceCoordinate, angle));
+  });
 
-  return finalCoordinates
-}
+  return finalCoordinates;
+};
 
 
 export const RotatePoint = (pointToRotate, centerPoint, angleInDegrees) => {
@@ -578,5 +594,13 @@ export const GetCharCoordinates = (char, y, x, width, height) => {
       [y + height * 3 / 4, x + width / 2],
     ]
     return coordinates
+  }
+
+  if (char == ";") {
+    coordinates = [
+      [0, 0],
+      [0,0]
+    ];
+    return coordinates;
   }
 }

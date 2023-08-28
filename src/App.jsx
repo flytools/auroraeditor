@@ -163,7 +163,7 @@ function App() {
             color: "white",
             fill: true,
             fillOpacity: 1,
-            fillColor: "#f59e0b",
+            fillColor: "#991b1b",
           });
           marker.addTo(MensureStartMarker);
         } else {
@@ -182,7 +182,7 @@ function App() {
           color: "white",
           fill: true,
           fillOpacity: 1,
-          fillColor: "#f59e0b",
+          fillColor: "#991b1b",
         });
 
         const info = geomagnetism.model().point([e2.latlng.lng, e2.latlng.lat]);
@@ -213,7 +213,7 @@ function App() {
 
         // draw the line between points
         L.polyline([MensureStartCoordinate, e2.latlng], {
-          color: "#f59e0b",
+          color: "#991b1b",
           strokeWidth: "10px",
           weight: 7,
         }).addTo(MensureRoute);
@@ -279,9 +279,16 @@ function App() {
     if (options.arrowLeft) string = "<" + string;
     if (options.arrowRight) string = string + ">";
 
+    var secondLine = false
     var index = 0;
     string.split("").forEach((char) => {
-      if (!"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890+-<>°".includes(char)) {
+      if (char == ";") {
+        secondLine = true
+        index = -1
+        console.log('is second')
+      }
+
+      if (!"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890+-<>°;".includes(char)) {
         toast("Invalid Character '" + char + "'");
       } else {
         var coordinates = GetCharacter(
@@ -290,8 +297,10 @@ function App() {
           index,
           width,
           angle,
-          characterSpace
+          characterSpace,
+          secondLine
         );
+
         var polyline = L.polyline(coordinates, {
           color: color,
           strokeWidth: "10px",
@@ -335,7 +344,8 @@ function App() {
         width,
         angle,
         characterSpace,
-        true
+        true,
+        secondLine
       );
       var polyline = L.polyline(coordinates, {
         color: color,
