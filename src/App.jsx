@@ -285,15 +285,15 @@ function App() {
     var secondLine = false
     var index = 0;
     string.split("").forEach((char) => {
-      if (char == ";") {
+      if (char == "_") {
         secondLine = true
-        index = -1
+        index = 0
         console.log('is second')
       }
 
-      if (!"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890+-<>°;".includes(char)) {
+      if (!"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890+-<>°_".includes(char)) {
         toast("Invalid Character '" + char + "'");
-      } else {
+      } else if(char != '_') {
         var coordinates = GetCharacter(
           char,
           startCoordinate,
@@ -310,7 +310,7 @@ function App() {
           weight: 3,
           properties: {
             text: string,
-            label: string + ":" + char,
+            label: string + "_" + char,
           },
         });
 
@@ -491,7 +491,7 @@ function App() {
       console.log(AuroraVfrRoute._layers);
       AuroraVfrRoute.eachLayer(function (feature) {
 
-        var label = feature.options.properties.label + ":" + RandomString(3);
+        var label = feature.options.properties.label + "_" + RandomString(2);
         var coordinates = feature._latlngs;
 
         lines += "//" + label + "\r\n";
@@ -558,7 +558,7 @@ function App() {
         weight: 3,
         properties: {
           text: string,
-          label: string + ":" + char,
+          label: string + "_" + char,
         },
       }).addTo(AuroraMarkerTemp);
 

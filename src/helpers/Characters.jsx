@@ -596,7 +596,7 @@ export const GetCharCoordinates = (char, y, x, width, height) => {
     return coordinates
   }
 
-  if (char == ";") {
+  if (char == "_") {
     coordinates = [
       [0, 0],
       [0,0]

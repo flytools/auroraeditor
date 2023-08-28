@@ -14,7 +14,7 @@ export default function LoadImageModal({
   const [url, setUrl] = useState(
     "https://upnow-prod.ff45e40d1a1c8f7e7de4e976d0c9e555.r2.cloudflarestorage.com/tKkQi97RvlPrCUPYC1LOh9ERkDq2/ac6fa676-d61c-4479-b347-955a6be2502b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=cdd12e35bbd220303957dc5603a4cc8e%2F20230828%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20230828T022939Z&X-Amz-Expires=43200&X-Amz-Signature=f0be63e21c1709ea40720943929110f63b73130f8841e74f08ce258b7ceffb69&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22SP.png%22"
   );
-  const [opacity, setOpacity] = useState(1);
+  const [opacity, setOpacity] = useState(0.5);
   const [latitudeN, setLatitudeN] = useState(-22.163667);
   const [latitudeS, setLatitudeS] = useState(-24.663667);
   const [longitudeE, setLongitudeE] = useState(-44.02);
@@ -137,7 +137,7 @@ export default function LoadImageModal({
                         onChange={(e) => handleChangeOpacity(e)}
                         className="bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-emerald-800 focus:border-emerald-800 block w-full p-1 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800"
                         placeholder="Opacity"
-                        defaultValue={1}
+                        defaultValue={0.5}
                       />
                     </div>
                   </div>
