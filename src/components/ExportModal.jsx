@@ -15,6 +15,10 @@ export default function ExportModal({
   const [content, setcontent] = useState("");
   const [typeOfFile, setTypeOfFile] = useState("");
 
+  const handleChangeContent = (e) => {
+    setcontent(e.target.value)
+  }
+
   useImperativeHandle(innerRef, () => ({
     OpenCloseModal(force=null) {
       if (force !== null) {
@@ -34,7 +38,9 @@ export default function ExportModal({
   }
 
   const handleSave = () => {
-    setcontent(handleExportData(typeOfFile))
+    var result = handleExportData(typeOfFile)
+    console.log(result)
+    setcontent(result)
   }
 
   const handleCopy = () => {
@@ -113,11 +119,11 @@ export default function ExportModal({
 
                 <div className="p-2">
                   <textarea
-                    id="content"
                     rows="15"
                     className="block p-2.5 w-full text-sm text-neutral-900 bg-neutral-50 rounded-lg border border-neutral-300 focus:ring-emerald-800 focus:border-emerald-800 dark:bg-neutral-800 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-emerald-800 dark:focus:border-emerald-800"
                     placeholder="Result data here..."
-                    defaultValue={content}
+                    value={content}
+                    onChange={(e) => handleChangeContent(e)}
                   />
                 </div>
 

@@ -211,7 +211,20 @@ export const toDegrees = (radians) => {
   return radians * 180 / Math.PI
 }
 
-function zeroPad(num, places) {
+export const zeroPad = (num, places) => {
   var zero = places - num.toString().length + 1
   return Array(+(zero > 0 && zero)).join("0") + num
+}
+
+export const RandomString = (length) => {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
 }

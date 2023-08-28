@@ -12,7 +12,7 @@ import ImportData from "./helpers/ImportData";
 import { GetCharacter, GetLine } from "./helpers/Characters";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { LatitudeDECtoDMS, LongitudeDECtoDMS, CalculateDirection, CalculateDistance } from "./helpers/Convert";
+import { LatitudeDECtoDMS, LongitudeDECtoDMS, CalculateDirection, CalculateDistance, RandomString } from "./helpers/Convert";
 
 var Map = null;
 var IsMensure = false;
@@ -488,8 +488,10 @@ function App() {
     var lines = "";
 
     if (type == "vrt") {
+      console.log(AuroraVfrRoute._layers);
       AuroraVfrRoute.eachLayer(function (feature) {
-        var label = feature.options.properties.label;
+
+        var label = feature.options.properties.label + ":" + RandomString(3);
         var coordinates = feature._latlngs;
 
         lines += "//" + label + "\r\n";
