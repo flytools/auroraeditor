@@ -31,6 +31,9 @@ export const DMStoDec = (coordinate) => {
 
 export const LatitudeDMStoDec = (latitude) => {
   //N038.10.04.627
+  latitude = latitude.length == 10 ? latitude + ".000" : latitude;
+  latitude = latitude.length == 7 ? latitude + ".00.000" : latitude;
+  latitude = latitude.length == 4 ? latitude + ".00.00.000" : latitude; 
 
   var direction = latitude.substring(0, 1);
   var degrees = parseFloat(latitude.substring(1, 4));
@@ -47,6 +50,10 @@ export const LatitudeDMStoDec = (latitude) => {
 
 export const LongitudeDMStoDec = (latitude) => {
   //N038.10.04.627
+
+  latitude = latitude.length == 10 ? latitude + ".000" : latitude;
+  latitude = latitude.length == 7 ? latitude + ".00.000" : latitude;
+  latitude = latitude.length == 4 ? latitude + ".00.00.000" : latitude; 
 
   var direction = latitude.substring(0, 1);
   var degrees = parseFloat(latitude.substring(1, 4));

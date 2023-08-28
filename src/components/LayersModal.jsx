@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from "react"
 
-export default function LayersModal({SetBaseLayer, SetMensure, SetDrawText }) {
+export default function LayersModal({SetBaseLayer, SetMensure, SetDrawText, setLoadImage }) {
     const [showModal, setShowModal] = React.useState(true);
 
     const [showBaseLayersModal, setShowBaseLayersModal] = React.useState(false);
@@ -37,6 +37,10 @@ export default function LayersModal({SetBaseLayer, SetMensure, SetDrawText }) {
         setDrawText((drawText) ? false : true)
         SetDrawText((drawText) ? false : true)
     }
+  
+    const handleLoadImage = () => {
+      setLoadImage()
+    };
 
     //layers
     let layers = [
@@ -224,29 +228,30 @@ export default function LayersModal({SetBaseLayer, SetMensure, SetDrawText }) {
                       {drawText ? (
                         <span
                           onClick={handleDrawText}
-                          id="base-modal-action"
                           className="block w-auto py-2 text-xs font-semibold text-emerald-500 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-emerald-400 select-none text-emerald-700"
-                          alt="Camada base do mapa"
-                          title="Camada base do mapa"
                         >
                           DRAW TEXT
                         </span>
                       ) : (
                         <span
                           onClick={handleDrawText}
-                          id="base-modal-action"
                           className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
-                          alt="Camada base do mapa"
-                          title="Camada base do mapa"
                         >
                           DRAW TEXT
                         </span>
                       )}
                     </li>
+
+                    <li>
+                        <span
+                          onClick={handleLoadImage}
+                          className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                        >
+                          LOAD IMAGE
+                        </span>
+                    </li>
                   </ul>
                 </div>
-
-                
               </div>
             </div>
           </div>

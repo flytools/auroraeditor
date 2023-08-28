@@ -3,6 +3,7 @@ import LayersModal from "./components/LayersModal";
 import ImportModal from "./components/ImportModal";
 import ExportModal from "./components/ExportModal";
 import DrawTextModal from "./components/DrawTextModal";
+import LoadImageModal from "./components/LoadImageModal";
 import "./App.css";
 //https://github.com/naturalatlas/geomagnetism
 import geomagnetism from "geomagnetism";
@@ -27,6 +28,8 @@ var AuroraVfrFix = L.featureGroup([]);
 
 var AuroraMarkerTemp = L.featureGroup([]);
 var AuroraPolylinesTemp = L.featureGroup([]);
+
+var AuroraLoadImage = L.featureGroup([]);
 
 import {
   MapContainer,
@@ -367,6 +370,45 @@ function App() {
     }
   };
 
+  const LoadImageRef = useRef()
+  const setLoadImage = (value) => {
+    LoadImageRef.current.OpenCloseModal();
+  }
+
+  const handleLoadImage = (options) => {
+    AuroraLoadImage.clearLayers();
+
+    var topLeft = [options.latitudeN, options.longitudeW];
+    var bottomRight = [options.latitudeS, options.longitudeE];
+
+    var markerTopLeft = L.circleMarker(topLeft, {
+      radius: 10,
+      fill: true,
+      opacity: 0,
+      fillOpacity: 1,
+      fillColor: "red",
+      draggable: true,
+    });
+    markerTopLeft.addTo(AuroraLoadImage);
+
+    var markerBottomRight = L.circleMarker(bottomRight, {
+      radius: 10,
+      fill: true,
+      opacity: 0,
+      fillOpacity: 1,
+      fillColor: "red",
+      draggable: true,
+    });
+    markerBottomRight.addTo(AuroraLoadImage);
+
+    var imageUrl = options.url,
+      imageBounds = [bottomRight, topLeft];
+
+    L.imageOverlay(imageUrl, imageBounds, {opacity: options.opacity}).addTo(
+      AuroraLoadImage
+    );
+  };
+
   //import
   const importRef = useRef();
 
@@ -637,8 +679,8 @@ function App() {
       <MapContainer
         ref={mapRef}
         className="h-full fixed top-0 right-0 left-0 mt-16"
-        center={[-4, -38.5] /*[-10, -60]*/}
-        zoom={10 /*5*/}
+        center={[-23.5, -46.5] /*[-10, -60]*/}
+        zoom={8 /*5*/}
         scrollWheelZoom={true}
         maxZoom={22}
         minZoom={2}
@@ -656,6 +698,7 @@ function App() {
           AuroraVfrFix,
           AuroraMarkerTemp,
           AuroraPolylinesTemp,
+          AuroraLoadImage,
         ]}
       >
         <TileLayer
@@ -677,6 +720,7 @@ function App() {
         SetBaseLayer={SetBaseLayer}
         SetMensure={SetMensure}
         SetDrawText={SetDrawText}
+        setLoadImage={setLoadImage}
         href="#"
       ></LayersModal>
 
@@ -732,6 +776,11 @@ function App() {
         innerRef={DrawTextRef}
         handleDrawText={handleDrawText}
       ></DrawTextModal>
+
+      <LoadImageModal
+        innerRef={LoadImageRef}
+        handleLoadImage={handleLoadImage}
+      ></LoadImageModal>
 
       <h1 className="">AuroraEditor 1</h1>
 
