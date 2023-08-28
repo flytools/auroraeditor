@@ -407,6 +407,8 @@ function App() {
     L.imageOverlay(imageUrl, imageBounds, {opacity: options.opacity}).addTo(
       AuroraLoadImage
     );
+
+    mapRef.current.fitBounds(AuroraLoadImage.getBounds());
   };
 
   //import
@@ -439,6 +441,7 @@ function App() {
           },
         }).addTo(AuroraVfrRoute);
       });
+      mapRef.current.fitBounds(AuroraVfrRoute.getBounds());
     }
 
     if (type == "vfi") {
@@ -466,8 +469,8 @@ function App() {
         });
         marker.addTo(AuroraVfrFix);
       });
+      mapRef.current.fitBounds(AuroraVfrFix.getBounds());
     }
-
     toast("Data successfully imported!");
   };
 
