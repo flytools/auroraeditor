@@ -524,10 +524,16 @@ function App() {
   const handleExportData = (type) => {
     var lines = "";
 
+    var lastLabel = ""
     if (type == "vrt") {
       AuroraVfrRoute.eachLayer(function (feature) {
         if (!feature.options.delete) {
-          var label = feature.options.properties.label + "_" + RandomString(2);
+          var label = feature.options.properties.label
+
+          if (label == lastLabel) label = label + "_" + RandomString(2)
+
+          lastLabel = label
+          
           var coordinates = feature._latlngs;
 
           lines += "//" + label + "\r\n";
@@ -554,6 +560,10 @@ function App() {
     if (type == "vfi") {
       AuroraVfrFix.eachLayer(function (feature) {
         var label = feature.options.properties.label
+
+        if (label == lastLabel) label = label + "_" + RandomString(2)
+        lastLabel = label
+        
         var description = feature.options.properties.description
         var coordinate = feature._latlng
 
