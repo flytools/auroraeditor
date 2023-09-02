@@ -319,6 +319,7 @@ function App() {
         polyline
           .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
           .on("click", (e) => {
+            e.target.options.delete = true
             if (IsDelete) e.target.remove();
           });
 
@@ -518,25 +519,25 @@ function App() {
     var lines = "";
 
     if (type == "vrt") {
-      console.log(AuroraVfrRoute._layers);
       AuroraVfrRoute.eachLayer(function (feature) {
+        if (!feature.options.delete) {
+          var label = feature.options.properties.label + "_" + RandomString(2);
+          var coordinates = feature._latlngs;
 
-        var label = feature.options.properties.label + "_" + RandomString(2);
-        var coordinates = feature._latlngs;
+          lines += "//" + label + "\r\n";
 
-        lines += "//" + label + "\r\n";
+          coordinates.forEach((coordinate) => {
+            lines +=
+              label +
+              ";" +
+              LatitudeDECtoDMS(coordinate.lat) +
+              ";" +
+              LongitudeDECtoDMS(coordinate.lng) +
+              ";\r\n";
+          });
 
-        coordinates.forEach((coordinate) => {
-          lines +=
-            label +
-            ";" +
-            LatitudeDECtoDMS(coordinate.lat) +
-            ";" +
-            LongitudeDECtoDMS(coordinate.lng) +
-            ";\r\n";
-        });
-
-        lines += "\r\n";
+          lines += "\r\n";
+        }
       });
 
       lines +=
