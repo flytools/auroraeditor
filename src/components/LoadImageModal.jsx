@@ -12,7 +12,7 @@ export default function LoadImageModal({
   const [showModal, setShowModal] = React.useState(false);
 
   const [url, setUrl] = useState(
-    "https://upnow-prod.ff45e40d1a1c8f7e7de4e976d0c9e555.r2.cloudflarestorage.com/tKkQi97RvlPrCUPYC1LOh9ERkDq2/ac6fa676-d61c-4479-b347-955a6be2502b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=cdd12e35bbd220303957dc5603a4cc8e%2F20230828%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20230828T022939Z&X-Amz-Expires=43200&X-Amz-Signature=f0be63e21c1709ea40720943929110f63b73130f8841e74f08ce258b7ceffb69&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22SP.png%22"
+    "https://ucarecdn.com/b341b031-0900-4a5e-a4fc-5cb6358ea1e1/"
   );
   const [opacity, setOpacity] = useState(0.5);
   const [latitudeN, setLatitudeN] = useState(-22.163667);

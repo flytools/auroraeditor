@@ -285,11 +285,12 @@ function App() {
     if (options.arrowRight) string = string + ">";
 
     var secondLine = false
+    var containsSecondLine = (string.includes('_')) ? true : false
     var index = 0;
     string.split("").forEach((char) => {
       if (char == "_") {
         secondLine = true
-        index = 0
+        index = (options.arrowLeft) ? 1 : 0
         console.log('is second')
       }
 
@@ -303,7 +304,8 @@ function App() {
           width,
           angle,
           characterSpace,
-          secondLine
+          secondLine,
+          containsSecondLine
         );
 
         var polyline = L.polyline(coordinates, {
@@ -319,7 +321,7 @@ function App() {
         polyline
           .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
           .on("click", (e) => {
-            e.target.options.delete = true
+            if (IsDelete) e.target.options.delete = true
             if (IsDelete) e.target.remove();
           });
 
@@ -347,6 +349,7 @@ function App() {
       polyline
         .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
         .on("click", (e) => {
+          if (IsDelete) e.target.options.delete = true;
           if (IsDelete) e.target.remove();
         });
     }
@@ -373,6 +376,7 @@ function App() {
       polyline
         .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
         .on("click", (e) => {
+          if (IsDelete) e.target.options.delete = true;
           if (IsDelete) e.target.remove();
         });
     }
@@ -466,6 +470,7 @@ function App() {
         })
           .addTo(AuroraVfrRoute)
           .on("click", (e) => {
+            if (IsDelete) e.target.options.delete = true;
             if (IsDelete) e.target.remove();
           });
       });
@@ -497,8 +502,9 @@ function App() {
         });
         marker.addTo(AuroraVfrFix)
           .on("click", (e) => {
-                if (IsDelete) e.target.remove();
-              });
+            if (IsDelete) e.target.options.delete = true;
+            if (IsDelete) e.target.remove();
+          });
       });
       mapRef.current.fitBounds(AuroraVfrFix.getBounds());
     }

@@ -1,7 +1,7 @@
 import { space } from 'postcss/lib/list'
 import { LatitudeDMStoDec, LongitudeDMStoDec, MilesToDecimalDegrees } from './Convert'
 
-export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0, characterSpace, secondLine=false) => {
+export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0, characterSpace, secondLine=false, containsSecondLine=false) => {
   var x = referenceCoordinate[1]
   var y = referenceCoordinate[0]
 
@@ -12,6 +12,14 @@ export const GetCharacter = (char, referenceCoordinate, index, width, angle = 0,
 
   if (secondLine) {
     y = y + height + (MilesToDecimalDegrees(characterSpace, y) * 2)
+  }
+
+  if (char == ">" && containsSecondLine) {
+    y = y - height + MilesToDecimalDegrees(characterSpace, y)
+  }
+
+  if (char == "<" && containsSecondLine) {
+    y = y + height - MilesToDecimalDegrees(characterSpace, y);
   }
 
   var coordinates = GetCharCoordinates(char, y, x, width, height)
