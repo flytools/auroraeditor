@@ -483,6 +483,7 @@ function App() {
       var features = ImportData(data, type);
 
       features.forEach((feature) => {
+        console.log(feature.label)
         var marker = new L.circleMarker(feature.coordinates, {
           radius: 7,
           color: "white",
