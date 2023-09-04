@@ -76,11 +76,11 @@ export default function LayersModal({
         <div>
           {showBaseLayersModal ? (
             <div className="absolute my-2 w-72 left-52 top-20">
-              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-zinc-900  outline-none focus:outline-none p-2 backdrop-blur bg-black/70 text-center items-center">
+              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-neutral-900  outline-none focus:outline-none p-2 backdrop-blur bg-black/70 text-center items-center">
                 <button
                   onClick={() => handleShowBaseLayersModal(false)}
                   type="button"
-                  className="absolute top-1 right-1 text-zinc-400 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-md text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-zinc-800 dark:hover:text-white"
+                  className="absolute top-1 right-1 text-neutral-400 bg-transparent hover:bg-neutral-200 hover:text-neutral-900 rounded-md text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-neutral-800 dark:hover:text-white"
                   data-modal-toggle="crypto-modal"
                 >
                   <svg
@@ -98,7 +98,7 @@ export default function LayersModal({
                 </button>
 
                 <div className="py-0">
-                  <p className="text-base font-semibold text-zinc-900 text-xxs dark:text-zinc-100 w-full">
+                  <p className="text-base font-semibold text-neutral-900 text-xxs dark:text-neutral-100 w-full">
                     BASE MAP
                   </p>
                 </div>
@@ -111,7 +111,7 @@ export default function LayersModal({
                         <span
                           id="streets"
                           onClick={handleBaseLayerClick}
-                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-zinc-300 select-none"
+                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-neutral-300 bg-neutral-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-neutral-300 select-none"
                           alt="Estradas"
                           title="Estradas"
                         >
@@ -121,7 +121,7 @@ export default function LayersModal({
                         <span
                           id="streets"
                           onClick={handleBaseLayerClick}
-                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-400 bg-zinc-900 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-neutral-400 bg-neutral-900 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                         >
                           STREETS
                         </span>
@@ -132,7 +132,7 @@ export default function LayersModal({
                         <span
                           id="sat"
                           onClick={handleBaseLayerClick}
-                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-zinc-300 select-none"
+                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-neutral-300 bg-neutral-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-neutral-300 select-none"
                         >
                           SAT
                         </span>
@@ -140,7 +140,7 @@ export default function LayersModal({
                         <span
                           id="sat"
                           onClick={handleBaseLayerClick}
-                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-400 bg-zinc-900 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-neutral-400 bg-neutral-900 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                         >
                           SAT
                         </span>
@@ -151,7 +151,7 @@ export default function LayersModal({
                         <span
                           id="topo"
                           onClick={handleBaseLayerClick}
-                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-zinc-300 select-none"
+                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-neutral-300 bg-neutral-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-neutral-300 select-none"
                         >
                           TOPO
                         </span>
@@ -159,7 +159,7 @@ export default function LayersModal({
                         <span
                           id="topo"
                           onClick={handleBaseLayerClick}
-                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-400 bg-zinc-900 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-neutral-400 bg-neutral-900 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                         >
                           TOPO
                         </span>
@@ -170,7 +170,7 @@ export default function LayersModal({
                         <span
                           id="dark"
                           onClick={handleBaseLayerClick}
-                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-300 bg-zinc-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-zinc-300 select-none"
+                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-neutral-300 bg-neutral-800 rounded-md border-2 border-emerald-600 cursor-pointer hover:text-neutral-300 select-none"
                         >
                           DARK
                         </span>
@@ -178,7 +178,7 @@ export default function LayersModal({
                         <span
                           id="dark"
                           onClick={handleBaseLayerClick}
-                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-zinc-400 bg-zinc-900 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                          className="inline-flex justify-between items-center p-2 w-full text-sm font-semibold text-neutral-400 bg-neutral-900 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                         >
                           DARK
                         </span>
@@ -191,9 +191,9 @@ export default function LayersModal({
           ) : null}
 
           <div className="absolute my-2 w-44 left-5 top-20">
-            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-zinc-900  outline-none focus:outline-none p-2 backdrop-blur bg-black/70 text-center">
+            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-neutral-900  outline-none focus:outline-none p-2 backdrop-blur bg-black/70 text-center">
               <div className="py-2">
-                <p className="text-base font-semibold text-zinc-900 text-xs dark:text-zinc-100 w-full text-center">
+                <p className="text-base font-semibold text-neutral-900 text-xs dark:text-neutral-100 w-full text-center">
                   SETTINGS
                 </p>
               </div>
@@ -203,7 +203,7 @@ export default function LayersModal({
                     <span
                       onClick={handleShowBaseLayersModal}
                       id="base-modal-action"
-                      className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                      className="block w-auto py-2 text-xs font-semibold text-neutral-400 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                       alt="Camada base do mapa"
                       title="Camada base do mapa"
                     >
@@ -219,7 +219,7 @@ export default function LayersModal({
                       <span
                         onClick={handleMensure}
                         id="base-modal-action"
-                        className="block w-auto py-2 text-xs font-semibold text-emerald-500 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-emerald-400 select-none text-emerald-700"
+                        className="block w-auto py-2 text-xs font-semibold text-emerald-500 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-emerald-400 select-none text-emerald-700"
                         alt="Camada base do mapa"
                         title="Camada base do mapa"
                       >
@@ -229,7 +229,7 @@ export default function LayersModal({
                       <span
                         onClick={handleMensure}
                         id="base-modal-action"
-                        className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                        className="block w-auto py-2 text-xs font-semibold text-neutral-400 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                         alt="Camada base do mapa"
                         title="Camada base do mapa"
                       >
@@ -240,7 +240,7 @@ export default function LayersModal({
                 </ul>
               </div>
               <div className="py-2 pt-5">
-                <p className="text-base font-semibold text-zinc-900 text-xs dark:text-zinc-100 w-full text-center">
+                <p className="text-base font-semibold text-neutral-900 text-xs dark:text-neutral-100 w-full text-center">
                   TOOLS
                 </p>
               </div>
@@ -250,14 +250,14 @@ export default function LayersModal({
                     {deleteFeature ? (
                       <span
                         onClick={handleDeleteFeature}
-                        className="block w-auto py-2 text-xs font-semibold text-red-500 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-red-400 select-none text-red-700"
+                        className="block w-auto py-2 text-xs font-semibold text-red-500 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-red-400 select-none text-red-700"
                       >
                         DELETE FEATURE
                       </span>
                     ) : (
                       <span
                         onClick={handleDeleteFeature}
-                        className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                        className="block w-auto py-2 text-xs font-semibold text-neutral-400 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                       >
                         DELETE FEATURE
                       </span>
@@ -268,14 +268,14 @@ export default function LayersModal({
                     {drawText ? (
                       <span
                         onClick={handleDrawText}
-                        className="block w-auto py-2 text-xs font-semibold text-emerald-500 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-emerald-400 select-none text-emerald-700"
+                        className="block w-auto py-2 text-xs font-semibold text-emerald-500 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-emerald-400 select-none text-emerald-700"
                       >
                         DRAW TEXT
                       </span>
                     ) : (
                       <span
                         onClick={handleDrawText}
-                        className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                        className="block w-auto py-2 text-xs font-semibold text-neutral-400 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                       >
                         DRAW TEXT
                       </span>
@@ -285,7 +285,7 @@ export default function LayersModal({
                   <li>
                     <span
                       onClick={handleLoadImage}
-                      className="block w-auto py-2 text-xs font-semibold text-zinc-400 bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer hover:text-zinc-300 select-none"
+                      className="block w-auto py-2 text-xs font-semibold text-neutral-400 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
                     >
                       LOAD IMAGE
                     </span>
@@ -303,7 +303,7 @@ export default function LayersModal({
 /*
 
 <div className="py-2 pt-5">
-                  <p className="text-base font-semibold text-zinc-900 text-xs dark:text-zinc-100 w-full text-center">
+                  <p className="text-base font-semibold text-neutral-900 text-xs dark:text-neutral-100 w-full text-center">
                     LAYERS
                   </p>
                 </div>
@@ -314,7 +314,7 @@ export default function LayersModal({
                         <span
                           onClick={null}
                           id="base-modal-action"
-                          className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 rounded-md border-2 border-zinc-700 cursor-pointer"
+                          className="flex w-auto pb-3 mb-1 text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer"
                           alt="Camada base do mapa"
                           title="Camada base do mapa"
                         >
@@ -338,7 +338,7 @@ export default function LayersModal({
                           </label>
                           <span
                             onClick={null}
-                            className="block w-6 py-2 right-2 absolute text-xs font-semibold cursor-pointer hover:bg-zinc-700 rounded-md"
+                            className="block w-6 py-2 right-2 absolute text-xs font-semibold cursor-pointer hover:bg-neutral-700 rounded-md"
                             alt="Camada base do mapa"
                             title="Camada base do mapa"
                           >
