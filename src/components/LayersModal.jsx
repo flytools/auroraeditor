@@ -7,6 +7,7 @@ export default function LayersModal({
   SetDrawText,
   setLoadImage,
   SetDeleteFeature,
+  SetEditLayer,
 }) {
   const [showModal, setShowModal] = React.useState(true);
 
@@ -19,6 +20,7 @@ export default function LayersModal({
       : localStorage.getItem("baselayer")
   );
 
+  const [editLayer, setEditLayer] = useState(false);
   const [deleteFeature, setDeleteFeature] = useState(false);
   const [mensure, setMensure] = useState(false);
   const [drawText, setDrawText] = useState(false);
@@ -53,6 +55,11 @@ export default function LayersModal({
   const handleDeleteFeature = () => {
     setDeleteFeature(deleteFeature ? false : true);
     SetDeleteFeature(deleteFeature ? false : true);
+  };
+
+  const handleEditLayer = () => {
+    setEditLayer(editLayer ? false : true);
+    SetEditLayer(editLayer ? false : true);
   };
 
   const handleDrawText = () => {
@@ -246,6 +253,24 @@ export default function LayersModal({
               </div>
               <div className="p-0">
                 <ul className="flex flex-col space-y-1">
+                  <li>
+                    {editLayer ? (
+                      <span
+                        onClick={handleEditLayer}
+                        className="block w-auto py-2 text-xs font-semibold text-red-500 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-red-400 select-none text-red-700"
+                      >
+                        EDIT LAYER
+                      </span>
+                    ) : (
+                      <span
+                        onClick={handleEditLayer}
+                        className="block w-auto py-2 text-xs font-semibold text-neutral-400 bg-neutral-900 hover:bg-neutral-800 rounded-md border-2 border-neutral-700 cursor-pointer hover:text-neutral-300 select-none"
+                      >
+                        EDIT LAYER
+                      </span>
+                    )}
+                  </li>
+
                   <li>
                     {deleteFeature ? (
                       <span

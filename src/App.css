@@ -76,3 +76,11 @@
 .leaflet-control-zoom{
   display: none;
 }
+
+    .sr-only {
+      display: none;
+    }
+
+    .leaflet-draw-toolbar{
+      z-index: 999999;
+    }

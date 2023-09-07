@@ -3,6 +3,7 @@ import LayersModal from "./components/LayersModal";
 import ImportModal from "./components/ImportModal";
 import ExportModal from "./components/ExportModal";
 import DrawTextModal from "./components/DrawTextModal";
+import EditLayerModal from "./components/EditLayerModal";
 import LoadImageModal from "./components/LoadImageModal";
 import "./App.css";
 //https://github.com/naturalatlas/geomagnetism
@@ -31,7 +32,10 @@ var AuroraPolylinesTemp = L.featureGroup([]);
 
 var AuroraLoadImage = L.featureGroup([]);
 
+
 var IsDelete = false
+
+import { EditControl } from "react-leaflet-draw";
 
 import {
   MapContainer,
@@ -39,12 +43,19 @@ import {
   Marker,
   Popup,
   useMapEvent,
+  FeatureGroup,
 } from "react-leaflet";
 import { useMap, Rectangle } from "react-leaflet";
+//import "https://npmcdn.com/leaflet.path.drag@0.0.6/src/Path.Drag.js";
+//import "https://leaflet.github.io/Leaflet.Editable/src/Leaflet.Editable.js";
+//import 'leaflet-draw/dist/leaflet.draw.css'
+
 
 var IsDrawText = false;
 var DrawTextCoordinate = null;
 var DrawTextOptions = null;
+
+var IsEditLayer = false;
 
 const innerBounds = [
   [49.505, -2.09],
@@ -439,6 +450,134 @@ function App() {
     return null
   }
 
+  //edit layer
+  const EditLayerRef = useRef();
+  const SetEditLayer = (value) => {
+    IsEditLayer = value;
+    EditLayerRef.current.OpenCloseModal(value);
+  };
+
+  const handleEditLayer = (options) => {
+    DrawTextOptions = options;
+    AuroraPolylinesTemp.clearLayers();
+
+    //toast("Wow so easy !")
+    var startCoordinate = [DrawTextCoordinate.lat, DrawTextCoordinate.lng];
+    var width = options.size;
+    var angle = options.rotate;
+    var characterSpace = options.size * 0.25;
+    var color = options.execute ? "#f59e0b" : "#0ea5e9";
+
+    var string = options.text; //"0123456789°+-<>"
+
+    if (options.arrowLeft) string = "<" + string;
+    if (options.arrowRight) string = string + ">";
+
+    var secondLine = false;
+    var containsSecondLine = string.includes("_") ? true : false;
+    var index = 0;
+    string.split("").forEach((char) => {
+      if (char == "_") {
+        secondLine = true;
+        index = options.arrowLeft ? 1 : 0;
+        console.log("is second");
+      }
+
+      if (!"ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890+-<>°_".includes(char)) {
+        toast("Invalid Character '" + char + "'");
+      } else if (char != "_") {
+        var coordinates = GetCharacter(
+          char,
+          startCoordinate,
+          index,
+          width,
+          angle,
+          characterSpace,
+          secondLine,
+          containsSecondLine
+        );
+
+        var polyline = L.polyline(coordinates, {
+          color: color,
+          strokeWidth: "10px",
+          weight: 3,
+          properties: {
+            text: string,
+            label: string + "_" + char,
+          },
+        });
+
+        polyline
+          .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
+          .on("click", (e) => {
+            if (IsDelete) e.target.options.delete = true;
+            if (IsDelete) e.target.remove();
+          });
+
+        index++;
+      }
+    });
+
+    if (options.baseLine) {
+      var coordinates = GetLine(
+        startCoordinate,
+        index,
+        width,
+        angle,
+        characterSpace
+      );
+      var polyline = L.polyline(coordinates, {
+        color: color,
+        strokeWidth: "10px",
+        weight: 3,
+        properties: {
+          text: string,
+          label: string + ":BASELINE",
+        },
+      });
+      polyline
+        .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
+        .on("click", (e) => {
+          if (IsDelete) e.target.options.delete = true;
+          if (IsDelete) e.target.remove();
+        });
+    }
+
+    if (options.topLine) {
+      var coordinates = GetLine(
+        startCoordinate,
+        index,
+        width,
+        angle,
+        characterSpace,
+        true,
+        secondLine
+      );
+      var polyline = L.polyline(coordinates, {
+        color: color,
+        strokeWidth: "10px",
+        weight: 3,
+        properties: {
+          text: string,
+          label: string + ":TOPLINE",
+        },
+      });
+      polyline
+        .addTo(options.execute ? AuroraVfrRoute : AuroraPolylinesTemp)
+        .on("click", (e) => {
+          if (IsDelete) e.target.options.delete = true;
+          if (IsDelete) e.target.remove();
+        });
+    }
+
+    if (options.execute) {
+      AuroraMarkerTemp.clearLayers();
+      //IsDrawText = false
+      DrawTextCoordinate = null;
+      DrawTextOptions.execute = false;
+    }
+  };
+
   //import
   const importRef = useRef();
 
@@ -614,6 +753,63 @@ function App() {
     });
   }
 
+
+
+  const auroraEditGroupRef = useRef(null);
+  const auroraEditDrawControlRef = useRef(null);
+
+  const handleTest = () => {
+    //new L.Draw.Polyline(mapRef, mapRef.current.options.polyline).enable();
+    //console.log(mapRef.current)
+    //mapRef.current.leafletElement._toolbars.draw._modes.polygon.handler.enable();
+
+    //add polygon
+    /*var polygonDrawer = new L.Draw.Polyline(mapRef.current)
+
+
+    polygonDrawer.setOptions({
+      shapeOptions: {
+        color: "#f00",
+        type: "temp",
+        properties: {
+          label: "test",
+        },
+      },
+    });
+    
+    
+    polygonDrawer.enable()*/
+
+    //console.log(polygonDrawer)
+
+    
+
+    //move layers to editable layer
+    console.log(mapRef.current)
+    AuroraVfrRoute.eachLayer(function (layer) {
+      console.log(layer);
+      layer.options.delete = true;
+      layer.setStyle({
+        color: "#0ea5e9",
+      });
+      layer.addTo(auroraEditGroupRef.current);
+      //AuroraVfrRoute.removeLayer(layer);
+      //AuroraEditGroup
+    });
+  }
+
+  const _onCreate = (e) => {
+    console.log(e)
+  }
+
+  const _onEdited = (e) => {
+    console.log(e);
+  };
+
+  const _onDeleted = (e) => {
+    console.log(e);
+  };
+
   return (
     <>
       <header
@@ -648,6 +844,24 @@ function App() {
                   <path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 001.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 001.897 1.384C6.809 19.664 9.315 20.25 12 20.25z" />
                 </svg>
                 <span>Clear</span>
+              </a>
+
+              <a
+                onClick={handleTest}
+                className="font-medium flex items-center space-x-2 px-3 py-2 rounded text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800 cursor-pointer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875z" />
+                  <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 001.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 001.897 1.384C6.809 12.164 9.315 12.75 12 12.75z" />
+                  <path d="M12 16.5c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 001.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 001.897 1.384C6.809 15.914 9.315 16.5 12 16.5z" />
+                  <path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 001.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 001.897 1.384C6.809 19.664 9.315 20.25 12 20.25z" />
+                </svg>
+                <span>Test</span>
               </a>
 
               <a
@@ -754,6 +968,29 @@ function App() {
           AuroraLoadImage,
         ]}
       >
+        <FeatureGroup ref={auroraEditGroupRef}>
+          <EditControl
+            //ref={auroraEditDrawControlRef}
+            position="topright"
+            onCreated={_onCreate}
+            onEdited={_onEdited}
+            onDeleted={_onDeleted}
+            draw={{
+              rectangle: false,
+              circle: false,
+            }}
+            /*edit={{
+              remove: false,
+              allowIntersection: false,
+              edit: false,
+              toolbar: false,
+            }}*/
+            edit={
+              {enable:true}
+            }
+            //featureGroup={AuroraVfrRoute}
+          ></EditControl>
+        </FeatureGroup>
         <TileLayer
           ref={tileLayerRef}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -776,6 +1013,7 @@ function App() {
         SetDrawText={SetDrawText}
         setLoadImage={setLoadImage}
         SetDeleteFeature={SetDeleteFeature}
+        SetEditLayer={SetEditLayer}
         href="#"
       ></LayersModal>
 
@@ -831,6 +1069,14 @@ function App() {
         innerRef={DrawTextRef}
         handleDrawText={handleDrawText}
       ></DrawTextModal>
+
+      <EditLayerModal
+        innerRef={EditLayerRef}
+        handleEditLayer={handleEditLayer}
+        mapRef={mapRef}
+        vfrRouteLayer={AuroraVfrRoute}
+        auroraEditGroupRef={auroraEditGroupRef}
+      ></EditLayerModal>
 
       <LoadImageModal
         innerRef={LoadImageRef}
